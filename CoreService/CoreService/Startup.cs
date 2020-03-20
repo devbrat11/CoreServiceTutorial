@@ -26,6 +26,11 @@ namespace CoreService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "HKIAppBackendApi", Version = "1.0" });
+                c.DescribeAllEnumsAsStrings();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,7 +46,10 @@ namespace CoreService
                 app.UseHsts();
             }
 
+            app.UseSwagger();
             app.UseHttpsRedirection();
+
+            app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "HKIAppBackendApi V1.0"); });
             app.UseMvc();
         }
     }
