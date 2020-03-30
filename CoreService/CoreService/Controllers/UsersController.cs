@@ -10,8 +10,12 @@ namespace CoreService.Controllers
         [HttpGet]
         public IActionResult GetUser()
         {
-            return Ok();
+            return Ok(new User()
+            {
+                FirstName = "Devbrat"
+            });
         }
+
         [HttpPost]
         public IActionResult AddUser([FromBody] User user)
         {
