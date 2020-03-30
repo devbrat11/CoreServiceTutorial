@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreService.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -28,7 +31,7 @@ namespace CoreService
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "HKIAppBackendApi", Version = "1.0" });
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "ActionsContextApi", Version = "1.0" });
                 c.DescribeAllEnumsAsStrings();
             });
         }
@@ -49,7 +52,7 @@ namespace CoreService
             app.UseSwagger();
             app.UseHttpsRedirection();
 
-            app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "HKIAppBackendApi V1.0"); });
+            app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "ActionsContext V1.0"); });
             app.UseMvc();
         }
     }
