@@ -1,7 +1,7 @@
 ﻿using CoreService.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoreService.Data
+namespace CoreService.Data.Repository
 {
     public class CoreServiceContext : DbContext
     {
@@ -12,6 +12,7 @@ namespace CoreService.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Asset> Assets { get; set; }
+        public DbSet<UserCredentials> UsersLoginInfo { get; set; }
 
     }
 }

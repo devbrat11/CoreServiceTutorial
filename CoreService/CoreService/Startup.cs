@@ -1,5 +1,6 @@
 ﻿
 using CoreService.Data;
+using CoreService.Data.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -22,15 +23,12 @@ namespace CoreService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CoreServiceContext>(x => x.UseInMemoryDatabase("UsersDb"));
-            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            ConfigureDb(services);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "ActionsContextApi", Version = "1.0" });
-                c.DescribeAllEnumsAsStrings();
             });
-            services.AddScoped<IDataStore, InMemorySqlDataStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,9 +46,30 @@ namespace CoreService
            
             app.UseSwagger();
             app.UseHttpsRedirection();
-
             app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "ActionsContext V1.0"); });
             app.UseMvc();
         }
+
+        private void ConfigureDb(IServiceCollection services)
+        {
+            var dbType = Configuration.GetSection("DbConfiguration").GetSection("Type").Value;
+            var dbLocation = Configuration.GetSection("DbConfiguration").GetSection("Location").Value;
+            if (dbType.Equals("Sql"))
+            {
+                if (dbLocation.Equals("Azure"))
+                {
+                    var connectionString = Configuration.GetConnectionString("AzureSqlDb");
+                    services.AddDbContext<CoreServiceContext>(optionsBuilder =>
+                        optionsBuilder.UseSqlServer(connectionString));
+                }
+                else
+                {
+                    services.AddDbContext<CoreServiceContext>(x => x.UseInMemoryDatabase($"{dbType}-{dbLocation}"));
+                }
+                services.AddScoped<IDataStore, SqlDataStore>();
+            }
+            
+        }
+
     }
 }

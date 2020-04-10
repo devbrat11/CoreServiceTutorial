@@ -1,9 +1,10 @@
-﻿using System;
-using CoreService.Data;
-using CoreService.Data.Entities;
+﻿using CoreService.Data.Entities;
+using CoreService.Data.Repository;
 using CoreService.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using CoreService.Helpers;
 
 namespace CoreService.Controllers
 {
@@ -11,7 +12,7 @@ namespace CoreService.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private IDataStore _dataStore;
+        private readonly IDataStore _dataStore;
 
         public UsersController(IDataStore dataStore)
         {
@@ -30,36 +31,61 @@ namespace CoreService.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetUser(string id)
+        public IActionResult GetUser(Guid id)
         {
-            var user  = _dataStore.GetUser(id);
+            var user = _dataStore.GetUser(id);
             if (user == null)
             {
-                return NotFound();
+                return NotFound($"User not found.");
             }
             return Ok(user);
         }
 
-        [HttpPost]
-        public IActionResult AddUser([FromBody] UserDto user)
+        [HttpGet("{id}/assets")]
+        public IActionResult GetUserAssets(Guid id)
         {
-            _dataStore.AddUser(new User()
+            var assets = _dataStore.GetUserAssets(id);
+            if (assets == null)
             {
-                Name = user.FirstName+" "+user.LastName,
-                Age = user.Age
-            });
-            _dataStore.SaveChanges();
-            return Ok();
+                return NotFound($"No Asset.");
+            }
+            return Ok(assets);
+        }
+
+        [HttpPost("authenticate")]
+        public IActionResult ValidateUser([FromBody]UserCredentialDto userCredential)
+        {
+            var userValidationInfo = _dataStore.IsUserValid(userCredential.EmailId, userCredential.Password);
+            if (userValidationInfo.Item1)
+            {
+                return Ok(userValidationInfo.Item2);
+            }
+
+            return BadRequest("Invalid Credentials !");
+        }
+
+        [HttpPost]
+        public IActionResult AddUser([FromBody] UserRegistrationDto userRegistration)
+        {
+            var userEntity = userRegistration.GetUserEntities();
+            var isUserRegistered = _dataStore.TryRegisteringUser(userEntity);
+            if (isUserRegistered)
+            {
+                _dataStore.SaveChanges();
+                return Ok("User registered successfully");
+            }
+
+            return BadRequest();
         }
 
         [HttpPut]
-        public IActionResult UpdateUser(Guid userId,[FromBody] UserDto user)
+        public IActionResult UpdateUser(Guid userId, [FromBody] UserRegistrationDto userRegistration)
         {
             return Ok();
         }
 
         [HttpPatch]
-        public IActionResult UpdateUserPartially(Guid userId,[FromBody] JsonPatchDocument<UserDto> user)
+        public IActionResult UpdateUserPartially(Guid userId, [FromBody] JsonPatchDocument<UserRegistrationDto> user)
         {
             return Ok();
         }
