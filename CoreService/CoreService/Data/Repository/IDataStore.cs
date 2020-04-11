@@ -14,7 +14,7 @@ namespace CoreService.Data.Repository
         Tuple<bool,Guid> IsUserValid(string emailId, string password);
         List<Asset> GetUserAssets(Guid userId);
         bool TryRegisteringAsset(Asset asset);
-        Tuple<bool,string> TryAllocatingAssetToUser(Guid userId,Asset asset);
+        Tuple<bool,string> TryAllocatingAssetToUser(Guid userId, string assetSerialNumber);
         bool TryUpdatingAssetDetails(Asset asset);
         List<Asset> GetAllAssets();
         Asset GetAsset(string serialNumber);

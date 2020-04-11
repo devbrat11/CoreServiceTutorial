@@ -40,6 +40,7 @@ namespace CoreService.Helpers
                 ModelNumber = assetDto.ModelNumber,
                 SerialNumber = assetDto.SerialNumber,
                 HostName =  assetDto.HostName,
+                OwnerId = assetDto.OwnerId
             };
 
             return asset;

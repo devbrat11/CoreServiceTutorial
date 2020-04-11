@@ -88,7 +88,6 @@ namespace CoreService.Data.Repository
             return new Tuple<bool, Guid>(false,Guid.Empty);
         }
 
-
         public List<Asset> GetUserAssets(Guid userId)
         {
             var assets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(userId)).ToList();
@@ -106,24 +105,21 @@ namespace CoreService.Data.Repository
             return true;
         }
 
-        public Tuple<bool, string> TryAllocatingAssetToUser(Guid userId, Asset asset)
+        public Tuple<bool, string> TryAllocatingAssetToUser(Guid userId, string assetSerialNumber)
         {
-            var assetEntity = _coreServiceContext.Assets.FirstOrDefault(x => x.SerialNumber == asset.SerialNumber);
-            if (assetEntity!=null)
+            var asset = _coreServiceContext.Assets.FirstOrDefault(x => x.SerialNumber == assetSerialNumber);
+            if (asset != null)
             {
-                if (!string.IsNullOrEmpty(assetEntity.OwnerId.ToString())||assetEntity.OwnerId.ToString()!="null")
+                if (asset.OwnerId!=Guid.Empty)
                 {
-                    var user = GetUser(assetEntity.OwnerId);
+                    var user = GetUser(asset.OwnerId);
                     return new Tuple<bool, string>(false, $"Asset is already allocated to user :\n {JsonConvert.SerializeObject(user)}.");
                 }
-                assetEntity.OwnerId = userId;
-            }
-            else
-            {
                 asset.OwnerId = userId;
-                _coreServiceContext.Assets.Add(asset);
+                return new Tuple<bool, string>(true, "Asset allocated to user successfully.");
             }
-            return new Tuple<bool, string>(true, "Asset allocated to user successfully.");
+
+            return new Tuple<bool, string>(false, "Asset does not exists.");
         }
 
         public bool TryUpdatingAssetDetails(Asset asset)

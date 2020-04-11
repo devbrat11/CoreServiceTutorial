@@ -12,5 +12,6 @@ namespace CoreService.Models
         public string SerialNumber { get; set; }
         public string Brand { get; set; }
         public string HostName { get; set; }
+        public Guid OwnerId { get; set; }
     }
 }

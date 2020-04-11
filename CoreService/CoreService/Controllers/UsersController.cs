@@ -72,7 +72,7 @@ namespace CoreService.Controllers
             if (isUserRegistered)
             {
                 _dataStore.SaveChanges();
-                return Ok("User registered successfully");
+                return StatusCode(201, "User registered successfully.");
             }
 
             return BadRequest();

@@ -45,6 +45,10 @@ namespace CoreService.Controllers
             var asset = _dataStore.GetAsset(serialNumber);
             if (asset != null)
             {
+                if (asset.OwnerId.Equals(Guid.Empty))
+                {
+                    return NoContent();
+                }
                 var user = _dataStore.GetUser(asset.OwnerId);
                 if (user != null)
                 {
@@ -62,17 +66,16 @@ namespace CoreService.Controllers
             if (isAssetAdded)
             {
                 _dataStore.SaveChanges();
-                return Ok("Asset registered successfully...");
+                return StatusCode(201, "Asset registered successfully...");
             }
 
             return BadRequest("Asset is already registered.");
         }
 
-        [HttpPut("assign/{userId}")]
-        public IActionResult AllocateAssetToUser(Guid userId, [FromBody] AssetDto asset)
+        [HttpPut("{assetSerialNumber}/assign/{userId}")]
+        public IActionResult AllocateAssetToUser(string assetSerialNumber,Guid userId)
         {
-            var assetEntity = asset.ConvertToEntity();
-            var assetAllocationInfo = _dataStore.TryAllocatingAssetToUser(userId,assetEntity);
+            var assetAllocationInfo = _dataStore.TryAllocatingAssetToUser(userId, assetSerialNumber);
             if (assetAllocationInfo.Item1)
             {
                 _dataStore.SaveChanges();
@@ -84,8 +87,7 @@ namespace CoreService.Controllers
         [HttpPut]
         public IActionResult UpdateAssetDetails([FromBody] AssetDto asset)
         {
-            var assetEntity = asset.ConvertToEntity();
-            var isAssetInfoUpdated = _dataStore.TryUpdatingAssetDetails(assetEntity);
+            var isAssetInfoUpdated = _dataStore.TryUpdatingAssetDetails(asset.ConvertToEntity());
             _dataStore.SaveChanges();
             if (isAssetInfoUpdated)
             {
@@ -94,4 +96,6 @@ namespace CoreService.Controllers
             return BadRequest("Failed to update asset details.");
         }
     }
+
+    
 }
