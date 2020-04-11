@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
-using CoreService.Data.Entities;
-using CoreService.Models;
+﻿using CoreService.Data.Entities;
 using CoreService.Models.BaseDto;
 using CoreService.Models.InputDto;
 using CoreService.Models.ResultDto;
-using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace CoreService.Helpers
 {
@@ -62,7 +59,55 @@ namespace CoreService.Helpers
             };
         }
 
-        public static AssetOutputDto AsAssetOutputDto(this Asset asset,UserResultDto owner)
+        public static UserResultDto AsUserResultDto(this User user, string emailId)
+        {
+            return new UserResultDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                DateOfBirth = user.DateOfBirth,
+                EmailId = emailId
+            };
+        }
+
+        public static UserResultDto AsUserResultDto(this User user, string emailId, Team team, List<Asset> assets)
+        {
+            return new UserResultDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                DateOfBirth = user.DateOfBirth,
+                EmailId = emailId,
+                Team = team.ConvertToTeamDto(),
+                Assets = assets.ConvertToAssetDto()
+            };
+        }
+
+        public static UserResultDto AsUserResultDto(this User user, string emailId, Team teamDetails)
+        {
+            return new UserResultDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                DateOfBirth = user.DateOfBirth,
+                EmailId = emailId,
+                Team = teamDetails.ConvertToTeamDto()
+            };
+        }
+
+        public static AssetDto AsAssetDto(this Asset asset)
+        {
+            return new AssetDto
+            {
+                Type = asset.Type,
+                Brand = asset.Brand,
+                ModelNumber = asset.ModelNumber,
+                SerialNumber = asset.SerialNumber,
+                HostName = asset.HostName,
+            };
+        }
+
+        public static AssetOutputDto AsAssetOutputDto(this Asset asset, UserResultDto owner)
         {
             return new AssetOutputDto
             {
@@ -93,28 +138,8 @@ namespace CoreService.Helpers
             return convertedAssets;
         }
 
-        public static AssetDto ConvertToAssetDto(this Asset asset)
-        {
-            return new AssetDto
-            {
-                Type = asset.Type,
-                Brand = asset.Brand,
-                ModelNumber = asset.ModelNumber,
-                SerialNumber = asset.SerialNumber,
-                HostName = asset.HostName,
-            };
-        }
 
-        public static UserResultDto AsUserResultDto(this User user,string emailId)
-        {
-            return new UserResultDto
-            {
-                Id = user.Id,
-                Name = user.Name,
-                DateOfBirth = user.DateOfBirth,
-                EmailId = emailId
-            };
-        }
+       
 
         public static TeamDto ConvertToTeamDto(this Team team)
         {
@@ -133,12 +158,12 @@ namespace CoreService.Helpers
             SHA256 sha256Hash = SHA256.Create();
             byte[] data = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
             var sBuilder = new StringBuilder();
-            
+
             foreach (var t in data)
             {
                 sBuilder.Append(t.ToString("x2"));
             }
-            
+
             return sBuilder.ToString();
         }
 
