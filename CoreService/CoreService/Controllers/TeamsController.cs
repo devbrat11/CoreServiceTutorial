@@ -61,7 +61,7 @@ namespace CoreService.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddTeam([FromBody]TeamBaseDto team)
+        public IActionResult AddTeam([FromBody]TeamDto team)
         {
             var isTeamAdded = _dataStore.TryAddingTeam(team.ToEntity());
             if (isTeamAdded)

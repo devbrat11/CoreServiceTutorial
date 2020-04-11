@@ -2,7 +2,7 @@
 
 namespace CoreService.Models.BaseDto
 {
-    public class TeamBaseDto
+    public class TeamDto
     {
         [Required]
         public string Name { get; set; }

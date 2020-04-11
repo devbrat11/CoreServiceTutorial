@@ -13,7 +13,7 @@ namespace CoreService.Helpers
 {
     public static class CustomMapper
     {
-        public static UserEntities GetUserEntities(this UserRegistrationDto userRegistrationDto)
+        public static UserEntities ToEntity(this UserRegistrationDto userRegistrationDto)
         {
             var user = new User
             {
@@ -35,7 +35,7 @@ namespace CoreService.Helpers
             };
         }
 
-        public static Asset ConvertToEntity(this AssetInputDto assetInputDto)
+        public static Asset ToEntity(this AssetInputDto assetInputDto)
         {
             var asset = new Asset
             {
@@ -50,7 +50,19 @@ namespace CoreService.Helpers
             return asset;
         }
 
-        public static AssetOutputDto ConvertToAssetOutputDto(this Asset asset,UserBaseDto owner)
+        public static Team ToEntity(this TeamDto team)
+        {
+            return new Team
+            {
+                Name = team.Name,
+                Department = team.Department,
+                ParentTeam = team.ParentTeam,
+                Manager = team.Manager,
+                Lead = team.Lead
+            };
+        }
+
+        public static AssetOutputDto AsAssetOutputDto(this Asset asset,UserResultDto owner)
         {
             return new AssetOutputDto
             {
@@ -93,9 +105,9 @@ namespace CoreService.Helpers
             };
         }
 
-        public static UserBaseDto ConvertToUserBaseDto(this User user,string emailId)
+        public static UserResultDto AsUserResultDto(this User user,string emailId)
         {
-            return new UserBaseDto
+            return new UserResultDto
             {
                 Id = user.Id,
                 Name = user.Name,
@@ -104,41 +116,15 @@ namespace CoreService.Helpers
             };
         }
 
-        public static Team ToEntity(this TeamBaseDto team)
+        public static TeamDto ConvertToTeamDto(this Team team)
         {
-            return new Team
+            return new TeamDto
             {
                 Name = team.Name,
                 Department = team.Department,
                 ParentTeam = team.ParentTeam,
                 Manager = team.Manager,
                 Lead = team.Lead
-            };
-        }
-
-        public static TeamBaseDto ConvertToTeamBaseDto(this Team team)
-        {
-            return new TeamBaseDto
-            {
-               Name = team.Name,
-                Department = team.Department,
-                ParentTeam = team.ParentTeam,
-                Manager = team.Manager,
-                Lead = team.Lead
-            };
-        }
-
-        public static TeamOutputDto ConvertToTeamOutputDto(this Team team,List<AssetDto>assets,List<UserBaseDto>members)
-        {
-            return new TeamOutputDto
-            {
-                Name = team.Name,
-                Department = team.Department,
-                ParentTeam = team.ParentTeam,
-                Manager = team.Manager,
-                Lead = team.Lead,
-                Assets = assets,
-                Members = members
             };
         }
 

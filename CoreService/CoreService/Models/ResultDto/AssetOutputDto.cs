@@ -4,6 +4,6 @@ namespace CoreService.Models.ResultDto
 {
     public class AssetOutputDto:AssetDto
     {
-        public UserBaseDto Owner { get; set; }
+        public UserResultDto Owner { get; set; }
     }
 }

@@ -66,7 +66,7 @@ namespace CoreService.Controllers
         [HttpPost]
         public IActionResult AddUser([FromBody] UserRegistrationDto userRegistration)
         {
-            var userEntity = userRegistration.GetUserEntities();
+            var userEntity = userRegistration.ToEntity();
             var isUserRegistered = _dataStore.TryRegisteringUser(userEntity);
             if (isUserRegistered)
             {

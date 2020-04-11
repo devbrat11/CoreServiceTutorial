@@ -10,8 +10,8 @@ namespace CoreService.Data.Repository
 {
     public interface IDataStore
     {
-        List<UserOutputDto> GetUsers();
-        UserOutputDto GetUser(Guid id);
+        List<UserResultDto> GetUsers();
+        UserResultDto GetUser(Guid id);
         bool TryRegisteringUser(UserEntities userEntity);
         Tuple<bool,Guid> IsUserValid(string emailId, string password);
         List<AssetDto> GetUserAssets(Guid userId);
@@ -25,8 +25,8 @@ namespace CoreService.Data.Repository
         bool TryAddingTeam(Team team);
         List<Team> GetAllTeamsInformation();
         Team GetTeamInformation(string teamName);
-        List<Asset> GetTeamAssets(string teamName);
-        List<UserBaseDto> GetTeamMembers(string teamName);
+        List<AssetOutputDto> GetTeamAssets(string teamName);
+        List<UserResultDto> GetTeamMembers(string teamName);
 
         bool SaveChanges();
     }

@@ -3,9 +3,9 @@ using CoreService.Models.BaseDto;
 
 namespace CoreService.Models.ResultDto
 {
-    public class TeamOutputDto:TeamBaseDto
+    public class TeamOutputDto:TeamDto
     {
-        public List<UserBaseDto> Members { get; set; }
-        public List<AssetDto> Assets { get; set; }
+        public List<UserResultDto> Members { get; set; }
+        public List<AssetOutputDto> Assets { get; set; }
     }
 }

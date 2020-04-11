@@ -18,9 +18,9 @@ namespace CoreService.Data.Repository
             _coreServiceContext = coreServiceContext;
         }
 
-        public List<UserOutputDto> GetUsers()
+        public List<UserResultDto> GetUsers()
         {
-            var result = new List<UserOutputDto>();
+            var result = new List<UserResultDto>();
             var users = _coreServiceContext.Users.ToList();
             foreach (var user in users)
             {
@@ -29,13 +29,13 @@ namespace CoreService.Data.Repository
                     x.Name.Equals(user.Team, StringComparison.InvariantCultureIgnoreCase));
                 var assets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(user.Id)).ToList();
 
-                result.Add(new UserOutputDto
+                result.Add(new UserResultDto
                 {
                     Id = user.Id,
                     Name = user.Name,
                     DateOfBirth = user.DateOfBirth,
                     EmailId = emailId,
-                    Team = team.ConvertToTeamBaseDto(),
+                    Team = team.ConvertToTeamDto(),
                     Assets = assets.ConvertToAssetDto()
                 });
 
@@ -43,7 +43,7 @@ namespace CoreService.Data.Repository
             return result;
         }
 
-        public UserOutputDto GetUser(Guid id)
+        public UserResultDto GetUser(Guid id)
         {
             var user = _coreServiceContext.Users.FirstOrDefault(x => x.Id.Equals(id));
             if (user != null)
@@ -53,13 +53,13 @@ namespace CoreService.Data.Repository
                     x.Name.Equals(user.Team, StringComparison.InvariantCultureIgnoreCase));
                 var assets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(user.Id)).ToList();
 
-                return new UserOutputDto
+                return new UserResultDto
                 {
                     Id = user.Id,
                     Name = user.Name,
                     DateOfBirth = user.DateOfBirth,
                     EmailId = emailId,
-                    Team = team.ConvertToTeamBaseDto(),
+                    Team = team.ConvertToTeamDto(),
                     Assets = assets.ConvertToAssetDto()
                 };
             }
@@ -157,17 +157,20 @@ namespace CoreService.Data.Repository
             var assets = _coreServiceContext.Assets.ToList();
             foreach (var asset in assets)
             {
-                UserBaseDto userDto = null;
+                UserResultDto owner = null;
                 if (asset.OwnerId != Guid.Empty)
                 {
                     var user = _coreServiceContext.Users.FirstOrDefault(x => x.Id.Equals(asset.OwnerId));
+                    var teamDetails = _coreServiceContext.Teams.FirstOrDefault(x =>
+                        x.Name.Equals(user.Team, StringComparison.InvariantCultureIgnoreCase));
                     if (user != null)
                     {
                         var emailId = _coreServiceContext.UsersLoginInfo.FirstOrDefault(x => x.Id.Equals(user.Id))?.EmailId;
-                        userDto = user.ConvertToUserBaseDto(emailId);
+                        owner = user.AsUserResultDto(emailId);
+                        owner.Team = teamDetails.ConvertToTeamDto();
                     }
                 }
-                requiredAssets.Add(asset.ConvertToAssetOutputDto(userDto));
+                requiredAssets.Add(asset.AsAssetOutputDto(owner));
 
             }
             return requiredAssets;
@@ -178,17 +181,20 @@ namespace CoreService.Data.Repository
             var asset = _coreServiceContext.Assets.FirstOrDefault(x => x.SerialNumber.Equals(serialNumber));
             if (asset != null)
             {
-                UserBaseDto owner = null;
+                UserResultDto owner = null;
                 if (asset.OwnerId != Guid.Empty)
                 {
                     var user = _coreServiceContext.Users.FirstOrDefault(x => x.Id.Equals(asset.OwnerId));
+                    var teamDetails = _coreServiceContext.Teams.FirstOrDefault(x =>
+                        x.Name.Equals(user.Team, StringComparison.InvariantCultureIgnoreCase));
                     if (user != null)
                     {
                         var emailId = _coreServiceContext.UsersLoginInfo.FirstOrDefault(x => x.Id.Equals(user.Id))?.EmailId;
-                        owner = user.ConvertToUserBaseDto(emailId);
+                        owner = user.AsUserResultDto(emailId);
+                        owner.Team = teamDetails.ConvertToTeamDto();
                     }
                 }
-                return asset.ConvertToAssetOutputDto(owner);
+                return asset.AsAssetOutputDto(owner);
             }
 
             return null;
@@ -217,35 +223,44 @@ namespace CoreService.Data.Repository
             return team;
         }
 
-        public List<Asset> GetTeamAssets(string teamName)
+        public List<AssetOutputDto> GetTeamAssets(string teamName)
         {
-            var teamAssets = new List<Asset>();
-            var users = _coreServiceContext.Users.Where(x =>
-                x.Team.Equals(teamName, StringComparison.InvariantCultureIgnoreCase)).ToList();
-            foreach (var user in users)
-            {
-                var userAssets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(user.Id));
-                teamAssets.AddRange(userAssets);
-            }
-
-            return teamAssets;
-        }
-
-        public List<UserBaseDto> GetTeamMembers(string teamName)
-        {
-            var teamUsers = new List<UserBaseDto>();
+            var teamAssets = new List<AssetOutputDto>();
             var users = _coreServiceContext.Users.Where(x =>
                 x.Team.Equals(teamName, StringComparison.InvariantCultureIgnoreCase)).ToList();
             foreach (var user in users)
             {
                 var emailId = _coreServiceContext.UsersLoginInfo.FirstOrDefault(x => x.Id.Equals(user.Id))?.EmailId;
-                teamUsers.Add(new UserBaseDto
+                var userDto = user.AsUserResultDto(emailId);
+                var userAssets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(user.Id));
+                foreach (var userAsset in userAssets)
+                {
+                    teamAssets.Add(userAsset.AsAssetOutputDto(userDto));
+                }
+            }
+
+            return teamAssets;
+        }
+
+        public List<UserResultDto> GetTeamMembers(string teamName)
+        {
+            var teamUsers = new List<UserResultDto>();
+            var users = _coreServiceContext.Users.Where(x =>
+                x.Team.Equals(teamName, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            foreach (var user in users)
+            {
+                var emailId = _coreServiceContext.UsersLoginInfo.FirstOrDefault(x => x.Id.Equals(user.Id))?.EmailId;
+                var assets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(user.Id)).ToList();
+                var userDto = new UserResultDto
                 {
                     Id = user.Id,
                     Name = user.Name,
                     DateOfBirth = user.DateOfBirth,
-                    EmailId = emailId
-                });
+                    EmailId = emailId,
+                    Assets = assets.ConvertToAssetDto()
+                };
+                
+                teamUsers.Add(userDto);
             }
             return teamUsers;
         }

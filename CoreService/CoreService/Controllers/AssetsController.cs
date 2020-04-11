@@ -57,7 +57,7 @@ namespace CoreService.Controllers
         [HttpPost]
         public IActionResult RegisterAsset([FromBody] AssetInputDto assetInput)
         {
-            var assetEntity = assetInput.ConvertToEntity();
+            var assetEntity = assetInput.ToEntity();
             var isAssetAdded = _dataStore.TryRegisteringAsset(assetEntity);
             if (isAssetAdded)
             {
@@ -83,7 +83,7 @@ namespace CoreService.Controllers
         [HttpPut]
         public IActionResult UpdateAssetDetails([FromBody] AssetInputDto assetInput)
         {
-            var isAssetInfoUpdated = _dataStore.TryUpdatingAssetDetails(assetInput.ConvertToEntity());
+            var isAssetInfoUpdated = _dataStore.TryUpdatingAssetDetails(assetInput.ToEntity());
             _dataStore.SaveChanges();
             if (isAssetInfoUpdated)
             {
