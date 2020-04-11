@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using CoreService.Data.Entities;
 using CoreService.Models;
+using CoreService.Models.BaseDto;
+using CoreService.Models.ResultDto;
 
 namespace CoreService.Data.Repository
 {
@@ -12,12 +14,20 @@ namespace CoreService.Data.Repository
         UserOutputDto GetUser(Guid id);
         bool TryRegisteringUser(UserEntities userEntity);
         Tuple<bool,Guid> IsUserValid(string emailId, string password);
-        List<Asset> GetUserAssets(Guid userId);
+        List<AssetDto> GetUserAssets(Guid userId);
+
         bool TryRegisteringAsset(Asset asset);
-        Tuple<bool,string> TryAllocatingAssetToUser(Guid userId, string assetSerialNumber);
+        Tuple<bool,string> TryAllocatingAssetToUser(string assetSerialNumber, Guid userId);
         bool TryUpdatingAssetDetails(Asset asset);
-        List<Asset> GetAllAssets();
-        Asset GetAsset(string serialNumber);
+        List<AssetOutputDto> GetAllAssets();
+        AssetOutputDto GetAsset(string serialNumber);
+
+        bool TryAddingTeam(Team team);
+        List<Team> GetAllTeamsInformation();
+        Team GetTeamInformation(string teamName);
+        List<Asset> GetTeamAssets(string teamName);
+        List<UserBaseDto> GetTeamMembers(string teamName);
+
         bool SaveChanges();
     }
 }

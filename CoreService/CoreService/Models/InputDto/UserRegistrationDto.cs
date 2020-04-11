@@ -1,8 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CoreService.Models
+namespace CoreService.Models.InputDto
 {
     public class UserRegistrationDto
     {
@@ -14,6 +13,6 @@ namespace CoreService.Models
         public string EmailId { get; set; }
         [Required]
         public string Password { get; set; }
-        public TeamDetails TeamDetails { get; set; }
+        public string Team { get; set; }
     }
 }

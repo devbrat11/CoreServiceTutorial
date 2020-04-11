@@ -1,8 +1,8 @@
-﻿using System;
-using CoreService.Data.Repository;
+﻿using CoreService.Data.Repository;
 using CoreService.Helpers;
-using CoreService.Models;
+using CoreService.Models.InputDto;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace CoreService.Controllers
 {
@@ -45,23 +45,19 @@ namespace CoreService.Controllers
             var asset = _dataStore.GetAsset(serialNumber);
             if (asset != null)
             {
-                if (asset.OwnerId.Equals(Guid.Empty))
+                if (asset.Owner == null)
                 {
                     return NoContent();
                 }
-                var user = _dataStore.GetUser(asset.OwnerId);
-                if (user != null)
-                {
-                    return Ok(user);
-                }
+                return Ok(asset.Owner);
             }
             return NotFound("Asset allocated to user does not exists.");
         }
 
         [HttpPost]
-        public IActionResult RegisterAsset([FromBody] AssetDto asset)
+        public IActionResult RegisterAsset([FromBody] AssetInputDto assetInput)
         {
-            var assetEntity = asset.ConvertToEntity();
+            var assetEntity = assetInput.ConvertToEntity();
             var isAssetAdded = _dataStore.TryRegisteringAsset(assetEntity);
             if (isAssetAdded)
             {
@@ -73,9 +69,9 @@ namespace CoreService.Controllers
         }
 
         [HttpPut("{assetSerialNumber}/assign/{userId}")]
-        public IActionResult AllocateAssetToUser(string assetSerialNumber,Guid userId)
+        public IActionResult AllocateAssetToUser(string assetSerialNumber, Guid userId)
         {
-            var assetAllocationInfo = _dataStore.TryAllocatingAssetToUser(userId, assetSerialNumber);
+            var assetAllocationInfo = _dataStore.TryAllocatingAssetToUser(assetSerialNumber, userId);
             if (assetAllocationInfo.Item1)
             {
                 _dataStore.SaveChanges();
@@ -85,9 +81,9 @@ namespace CoreService.Controllers
         }
 
         [HttpPut]
-        public IActionResult UpdateAssetDetails([FromBody] AssetDto asset)
+        public IActionResult UpdateAssetDetails([FromBody] AssetInputDto assetInput)
         {
-            var isAssetInfoUpdated = _dataStore.TryUpdatingAssetDetails(asset.ConvertToEntity());
+            var isAssetInfoUpdated = _dataStore.TryUpdatingAssetDetails(assetInput.ConvertToEntity());
             _dataStore.SaveChanges();
             if (isAssetInfoUpdated)
             {
@@ -97,5 +93,5 @@ namespace CoreService.Controllers
         }
     }
 
-    
+
 }

@@ -1,10 +1,9 @@
-﻿using CoreService.Data.Entities;
-using CoreService.Data.Repository;
-using CoreService.Models;
+﻿using CoreService.Data.Repository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using CoreService.Helpers;
+using CoreService.Models.InputDto;
 
 namespace CoreService.Controllers
 {
