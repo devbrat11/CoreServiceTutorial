@@ -21,14 +21,13 @@ namespace CoreService.Data.Repository
         bool TryUpdatingAssetDetails(Asset asset);
         List<Asset> GetAllAssets();
         Asset GetAsset(string serialNumber);
-        //List<AssetOutputDto> GetAllAssets();
-        //AssetOutputDto GetAsset(string serialNumber);
 
         bool TryAddingTeam(Team team);
         List<Team> GetAllTeamsInformation();
         Team GetTeamInformation(string teamName);
-        List<AssetOutputDto> GetTeamAssets(string teamName);
-        List<UserResultDto> GetTeamMembers(string teamName);
+        List<Asset> GetTeamAssets(string teamName);
+        List<User> GetTeamMembers(string teamName);
+
 
         bool SaveChanges();
     }

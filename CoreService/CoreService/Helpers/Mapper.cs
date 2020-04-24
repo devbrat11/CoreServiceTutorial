@@ -71,18 +71,6 @@ namespace CoreService.Helpers
             return resultUser;
         }
 
-        public static AssetDto AsAssetDto(this Asset asset)
-        {
-            return new AssetDto
-            {
-                Type = asset.Type,
-                Brand = asset.Brand,
-                ModelNumber = asset.ModelNumber,
-                SerialNumber = asset.SerialNumber,
-                HostName = asset.HostName,
-            };
-        }
-
         public static AssetOutputDto AsAssetOutputDto(this Asset asset, UserResultDto owner)
         {
             return new AssetOutputDto
@@ -96,7 +84,7 @@ namespace CoreService.Helpers
             };
         }
 
-        public static List<AssetDto> ConvertToAssetDto(this List<Asset> assets)
+        private static List<AssetDto> ConvertToAssetDto(this List<Asset> assets)
         {
             var convertedAssets = new List<AssetDto>();
             foreach (var asset in assets)
@@ -114,10 +102,7 @@ namespace CoreService.Helpers
             return convertedAssets;
         }
 
-
-       
-
-        public static TeamDto ConvertToTeamDto(this Team team)
+        private static TeamDto ConvertToTeamDto(this Team team)
         {
             return new TeamDto
             {

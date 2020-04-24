@@ -1,6 +1,5 @@
 ﻿using CoreService.Data.Entities;
 using CoreService.Helpers;
-using CoreService.Models.BaseDto;
 using CoreService.Models.ResultDto;
 using Newtonsoft.Json;
 using System;
@@ -136,36 +135,25 @@ namespace CoreService.Data.Repository
             return team;
         }
 
-        public List<AssetOutputDto> GetTeamAssets(string teamName)
+        public List<Asset> GetTeamAssets(string teamName)
         {
-            var teamAssets = new List<AssetOutputDto>();
+            var teamAssets = new List<Asset>();
             var users = _coreServiceContext.Users.Where(x =>
                 x.Team.Equals(teamName, StringComparison.InvariantCultureIgnoreCase)).ToList();
             foreach (var user in users)
             {
-                var userDto = user.AsUserResultDto();
                 var userAssets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(user.Id));
-                foreach (var userAsset in userAssets)
-                {
-                    teamAssets.Add(userAsset.AsAssetOutputDto(userDto));
-                }
+                teamAssets.AddRange(userAssets);
             }
 
             return teamAssets;
         }
 
-        public List<UserResultDto> GetTeamMembers(string teamName)
+        public List<User> GetTeamMembers(string teamName)
         {
-            var teamUsers = new List<UserResultDto>();
             var users = _coreServiceContext.Users.Where(x =>
                 x.Team.Equals(teamName, StringComparison.InvariantCultureIgnoreCase)).ToList();
-            foreach (var user in users)
-            {
-                var assets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(user.Id)).ToList();
-                var userDto = user.AsUserResultDto(null, assets);
-                teamUsers.Add(userDto);
-            }
-            return teamUsers;
+            return users;
         }
 
         public bool SaveChanges()
