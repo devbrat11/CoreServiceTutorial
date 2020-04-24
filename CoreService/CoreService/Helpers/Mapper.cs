@@ -10,25 +10,15 @@ namespace CoreService.Helpers
 {
     public static class CustomMapper
     {
-        public static UserEntities ToEntity(this UserRegistrationDto userRegistrationDto)
+        public static User ToEntity(this UserRegistrationDto userRegistrationDto)
         {
-            var user = new User
+            return new User
             {
                 Name = userRegistrationDto.FirstName + " " + userRegistrationDto.LastName,
                 DateOfBirth = userRegistrationDto.DateOfBirth,
-                Team = userRegistrationDto.Team
-            };
-
-            var credentials = new UserCredentials
-            {
+                Team = userRegistrationDto.Team,
                 EmailId = userRegistrationDto.EmailId,
-                Password = GetHash(userRegistrationDto.Password)
-            };
-
-            return new UserEntities
-            {
-                UserDetails = user,
-                UserCredentials = credentials
+                Password = userRegistrationDto.Password,
             };
         }
 
@@ -59,40 +49,26 @@ namespace CoreService.Helpers
             };
         }
 
-        public static UserResultDto AsUserResultDto(this User user, string emailId)
+        public static UserResultDto AsUserResultDto(this User user, Team team=null, List<Asset> assets=null)
         {
-            return new UserResultDto
+            var resultUser = new UserResultDto
             {
                 Id = user.Id,
                 Name = user.Name,
                 DateOfBirth = user.DateOfBirth,
-                EmailId = emailId
+                EmailId = user.EmailId
             };
-        }
+            if (team != null)
+            {
+                resultUser.Team = team.ConvertToTeamDto();
+            }
 
-        public static UserResultDto AsUserResultDto(this User user, string emailId, Team team, List<Asset> assets)
-        {
-            return new UserResultDto
+            if (assets != null)
             {
-                Id = user.Id,
-                Name = user.Name,
-                DateOfBirth = user.DateOfBirth,
-                EmailId = emailId,
-                Team = team.ConvertToTeamDto(),
-                Assets = assets.ConvertToAssetDto()
-            };
-        }
+                resultUser.Assets = assets.ConvertToAssetDto();
+            }
 
-        public static UserResultDto AsUserResultDto(this User user, string emailId, Team teamDetails)
-        {
-            return new UserResultDto
-            {
-                Id = user.Id,
-                Name = user.Name,
-                DateOfBirth = user.DateOfBirth,
-                EmailId = emailId,
-                Team = teamDetails.ConvertToTeamDto()
-            };
+            return resultUser;
         }
 
         public static AssetDto AsAssetDto(this Asset asset)

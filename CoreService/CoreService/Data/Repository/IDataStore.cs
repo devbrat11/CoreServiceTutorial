@@ -12,7 +12,7 @@ namespace CoreService.Data.Repository
     {
         List<UserResultDto> GetUsers();
         UserResultDto GetUser(Guid id);
-        bool TryRegisteringUser(UserEntities userEntity);
+        bool TryRegisteringUser(User user);
         Tuple<bool,Guid> IsUserValid(string emailId, string password);
         List<AssetDto> GetUserAssets(Guid userId);
 

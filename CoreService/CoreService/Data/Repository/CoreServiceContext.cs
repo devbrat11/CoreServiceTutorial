@@ -12,7 +12,6 @@ namespace CoreService.Data.Repository
 
         public DbSet<User> Users { get; set; }
         public DbSet<Asset> Assets { get; set; }
-        public DbSet<UserCredentials> UsersLoginInfo { get; set; }
         public DbSet<Team> Teams { get; set; }
 
     }
