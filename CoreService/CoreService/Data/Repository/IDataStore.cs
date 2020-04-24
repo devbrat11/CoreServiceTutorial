@@ -10,17 +10,19 @@ namespace CoreService.Data.Repository
 {
     public interface IDataStore
     {
-        List<UserResultDto> GetUsers();
-        UserResultDto GetUser(Guid id);
+        List<User> GetUsers();
+        User GetUser(Guid id);
         bool TryRegisteringUser(User user);
         Tuple<bool,Guid> IsUserValid(string emailId, string password);
-        List<AssetDto> GetUserAssets(Guid userId);
+        List<Asset> GetUserAssets(Guid userId);
 
         bool TryRegisteringAsset(Asset asset);
         Tuple<bool,string> TryAllocatingAssetToUser(string assetSerialNumber, Guid userId);
         bool TryUpdatingAssetDetails(Asset asset);
-        List<AssetOutputDto> GetAllAssets();
-        AssetOutputDto GetAsset(string serialNumber);
+        List<Asset> GetAllAssets();
+        Asset GetAsset(string serialNumber);
+        //List<AssetOutputDto> GetAllAssets();
+        //AssetOutputDto GetAsset(string serialNumber);
 
         bool TryAddingTeam(Team team);
         List<Team> GetAllTeamsInformation();

@@ -18,32 +18,16 @@ namespace CoreService.Data.Repository
             _coreServiceContext = coreServiceContext;
         }
 
-        public List<UserResultDto> GetUsers()
+        public List<User> GetUsers()
         {
-            var result = new List<UserResultDto>();
             var users = _coreServiceContext.Users.ToList();
-            foreach (var user in users)
-            {
-                var team = _coreServiceContext.Teams.FirstOrDefault(x =>
-                    x.Name.Equals(user.Team, StringComparison.InvariantCultureIgnoreCase));
-                var assets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(user.Id)).ToList();
-                result.Add(user.AsUserResultDto(team, assets));
-            }
-            return result;
+            return users;
         }
 
-        public UserResultDto GetUser(Guid id)
+        public User GetUser(Guid id)
         {
             var user = _coreServiceContext.Users.FirstOrDefault(x => x.Id.Equals(id));
-            if (user != null)
-            {
-                var team = _coreServiceContext.Teams.FirstOrDefault(x =>
-                    x.Name.Equals(user.Team, StringComparison.InvariantCultureIgnoreCase));
-                var assets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(user.Id)).ToList();
-
-                return user.AsUserResultDto(team, assets);
-            }
-            return null;
+            return user;
         }
 
         public bool TryRegisteringUser(User user)
@@ -69,15 +53,9 @@ namespace CoreService.Data.Repository
             return new Tuple<bool, Guid>(false, Guid.Empty);
         }
 
-        public List<AssetDto> GetUserAssets(Guid userId)
+        public List<Asset> GetUserAssets(Guid userId)
         {
-            var userAssets = new List<AssetDto>();
-            var assets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(userId)).ToList();
-            foreach (var asset in assets)
-            {
-                userAssets.Add(asset.AsAssetDto());
-            }
-            return userAssets;
+            return _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(userId)).ToList();
         }
 
         public bool TryRegisteringAsset(Asset asset)
@@ -122,49 +100,17 @@ namespace CoreService.Data.Repository
             return false;
         }
 
-        public List<AssetOutputDto> GetAllAssets()
-        {
-            var requiredAssets = new List<AssetOutputDto>();
-            var assets = _coreServiceContext.Assets.ToList();
-            foreach (var asset in assets)
-            {
-                UserResultDto owner = null;
-                if (asset.OwnerId != Guid.Empty)
-                {
-                    var user = _coreServiceContext.Users.FirstOrDefault(x => x.Id.Equals(asset.OwnerId));
-                    var teamDetails = _coreServiceContext.Teams.FirstOrDefault(x =>
-                        x.Name.Equals(user.Team, StringComparison.InvariantCultureIgnoreCase));
-                    if (user != null)
-                    {
-                        owner = user.AsUserResultDto(teamDetails);
-                    }
-                }
-                requiredAssets.Add(asset.AsAssetOutputDto(owner));
 
-            }
-            return requiredAssets;
+        public List<Asset> GetAllAssets()
+        {
+            var assets = _coreServiceContext.Assets.ToList();
+            return assets;
         }
 
-        public AssetOutputDto GetAsset(string serialNumber)
+        public Asset GetAsset(string serialNumber)
         {
             var asset = _coreServiceContext.Assets.FirstOrDefault(x => x.SerialNumber.Equals(serialNumber));
-            if (asset != null)
-            {
-                UserResultDto owner = null;
-                if (asset.OwnerId != Guid.Empty)
-                {
-                    var user = _coreServiceContext.Users.FirstOrDefault(x => x.Id.Equals(asset.OwnerId));
-                    var teamDetails = _coreServiceContext.Teams.FirstOrDefault(x =>
-                        x.Name.Equals(user.Team, StringComparison.InvariantCultureIgnoreCase));
-                    if (user != null)
-                    {
-                        owner = user.AsUserResultDto(teamDetails);
-                    }
-                }
-                return asset.AsAssetOutputDto(owner);
-            }
-
-            return null;
+            return asset;
         }
 
         public bool TryAddingTeam(Team team)

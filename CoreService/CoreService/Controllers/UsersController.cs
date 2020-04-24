@@ -2,8 +2,11 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using CoreService.Helpers;
 using CoreService.Models.InputDto;
+using CoreService.Models.ResultDto;
 
 namespace CoreService.Controllers
 {
@@ -22,11 +25,18 @@ namespace CoreService.Controllers
         public IActionResult GetUsers()
         {
             var users = _dataStore.GetUsers();
-            if (users == null)
+            var resultUsers = new List<UserResultDto>();
+            foreach (var user in users)
+            {
+                var team = _dataStore.GetTeamInformation(user.Team);
+                var assets = _dataStore.GetUserAssets(user.Id);
+                resultUsers.Add(user.AsUserResultDto(team, assets));
+            }
+            if (!resultUsers.Any())
             {
                 return NotFound();
             }
-            return Ok(users);
+            return Ok(resultUsers);
         }
 
         [HttpGet("{id}")]
@@ -37,7 +47,10 @@ namespace CoreService.Controllers
             {
                 return NotFound($"User not found.");
             }
-            return Ok(user);
+            var team = _dataStore.GetTeamInformation(user.Team);
+            var assets = _dataStore.GetUserAssets(user.Id);
+            var resultUser = user.AsUserResultDto(team, assets);
+            return Ok(resultUser);
         }
 
         [HttpGet("{id}/assets")]
@@ -64,9 +77,9 @@ namespace CoreService.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddUser([FromBody] UserRegistrationDto userRegistration)
+        public IActionResult AddUser([FromBody] UserRegistrationDto userToRegister)
         {
-            var userEntity = userRegistration.ToEntity();
+            var userEntity = userToRegister.ToEntity();
             var isUserRegistered = _dataStore.TryRegisteringUser(userEntity);
             if (isUserRegistered)
             {
