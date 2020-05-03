@@ -1,6 +1,5 @@
 ﻿using CoreService.Data.Entities;
 using CoreService.Helpers;
-using CoreService.Models.ResultDto;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

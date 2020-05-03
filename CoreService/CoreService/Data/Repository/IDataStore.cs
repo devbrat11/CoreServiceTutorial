@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using CoreService.Data.Entities;
-using CoreService.Models;
-using CoreService.Models.BaseDto;
-using CoreService.Models.ResultDto;
 
 namespace CoreService.Data.Repository
 {
