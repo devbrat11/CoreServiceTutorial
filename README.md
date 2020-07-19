@@ -1,2 +1,2 @@
 # CoreServiceTutorial
-Here we will learn asp.net core web api sql and no sql db
+REST web api implemented in asp.net core with sql db and EF core.
