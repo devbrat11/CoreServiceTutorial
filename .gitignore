@@ -1,4 +1,3 @@
 .vs
-CoreService/.vs/
-CoreService/CoreService/bin/Debug/
-CoreService/CoreService/obj/
+TAM.Service/bin/
+TAM.Service/obj/
