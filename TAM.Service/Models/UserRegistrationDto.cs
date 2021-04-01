@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace TAMService.Models.InputDto
+namespace TAMService.Models
 {
     public class UserRegistrationDto
     {

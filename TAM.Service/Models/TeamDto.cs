@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TAMService.Models.BaseDto
+namespace TAMService.Models
 {
     public class TeamDto
     {

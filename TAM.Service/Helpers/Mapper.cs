@@ -1,14 +1,13 @@
 ﻿using TAMService.Data.Entities;
-using TAMService.Models.BaseDto;
-using TAMService.Models.InputDto;
 using TAMService.Models.ResultDto;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using TAMService.Models;
 
 namespace TAMService.Helpers
 {
-    public static class CustomMapper
+    public static class Mapper
     {
         public static User ToEntity(this UserRegistrationDto userRegistrationDto)
         {
@@ -18,20 +17,19 @@ namespace TAMService.Helpers
                 DateOfBirth = userRegistrationDto.DateOfBirth,
                 Team = userRegistrationDto.Team,
                 EmailId = userRegistrationDto.EmailId,
-                Password = userRegistrationDto.Password,
             };
         }
 
-        public static Asset ToEntity(this AssetInputDto assetInputDto)
+        public static Asset ToEntity(this AssetDto assetDto)
         {
             var asset = new Asset
             {
-                Brand = assetInputDto.Brand,
-                Type = assetInputDto.Type,
-                ModelNumber = assetInputDto.ModelNumber,
-                SerialNumber = assetInputDto.SerialNumber,
-                HostName = assetInputDto.HostName,
-                OwnerId = assetInputDto.OwnerId
+                Brand = assetDto.Brand,
+                Type = assetDto.Type,
+                SerialNumber = assetDto.SerialNumber,
+                HostName = assetDto.HostName,
+                OwnerId = assetDto.OwnerId,
+                TeamId = assetDto.TeamId
             };
 
             return asset;
@@ -71,16 +69,16 @@ namespace TAMService.Helpers
             return resultUser;
         }
 
-        public static AssetOutputDto AsAssetOutputDto(this Asset asset, UserResultDto owner)
+        public static AssetDto ConvertToAssetDto(this Asset asset)
         {
-            return new AssetOutputDto
+            return new AssetDto
             {
                 Type = asset.Type,
                 Brand = asset.Brand,
-                ModelNumber = asset.ModelNumber,
                 SerialNumber = asset.SerialNumber,
                 HostName = asset.HostName,
-                Owner = owner
+                OwnerId = asset.OwnerId,
+                TeamId = asset.TeamId
             };
         }
 
@@ -93,7 +91,6 @@ namespace TAMService.Helpers
                 {
                     Type = asset.Type,
                     Brand = asset.Brand,
-                    ModelNumber = asset.ModelNumber,
                     SerialNumber = asset.SerialNumber,
                     HostName = asset.HostName,
                 });

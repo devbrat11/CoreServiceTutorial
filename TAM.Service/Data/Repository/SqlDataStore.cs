@@ -4,14 +4,17 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TAMService.Data.DataStore;
+using TAM.Service.Data.Entities;
+using TAMService.Models;
 
 namespace TAMService.Data.Repository
 {
     public class SqlDataStore : IDataStore
     {
-        private readonly CoreServiceContext _coreServiceContext;
+        private readonly TAMServiceContext _coreServiceContext;
 
-        public SqlDataStore(CoreServiceContext coreServiceContext)
+        public SqlDataStore(TAMServiceContext coreServiceContext)
         {
             _coreServiceContext = coreServiceContext;
         }
@@ -28,22 +31,30 @@ namespace TAMService.Data.Repository
             return user;
         }
 
-        public bool TryRegisteringUser(User user)
+        public bool TryRegisteringUser(UserRegistrationDto userRegistrationInfo)
         {
-            if (!_coreServiceContext.Users.Any(x => x.EmailId.Equals(user.EmailId)))
+            if (!_coreServiceContext.Users.Any(x => x.EmailId.Equals(userRegistrationInfo.EmailId)))
             {
+                var user = userRegistrationInfo.ToEntity();
+                var userCredentials = new UserCredential()
+                {
+                    EmailId = user.EmailId,
+                    Password = userRegistrationInfo.Password.GetHash()
+                };
                 _coreServiceContext.Users.Add(user);
+                _coreServiceContext.UserCredentials.Add(userCredentials);
                 return true;
             }
             return false;
         }
 
-        public Tuple<bool, Guid> IsUserValid(string emailId, string password)
+        public Tuple<bool, Guid> IsUserValid(UserCredential userCredential)
         {
-            var user = _coreServiceContext.Users.FirstOrDefault(x => x.EmailId.Equals(emailId));
-            if (user != null)
+            var userCredentials = _coreServiceContext.UserCredentials.FirstOrDefault(x => x.EmailId.Equals(userCredential.EmailId));
+            if (userCredentials != null)
             {
-                if (user.Password.Equals(password.GetHash()))
+                var user = _coreServiceContext.Users.FirstOrDefault(x => x.EmailId.Equals(userCredential.EmailId));
+                if (userCredentials.Password.Equals(userCredential.Password.GetHash()))
                 {
                     return new Tuple<bool, Guid>(true, user.Id);
                 }
@@ -90,9 +101,10 @@ namespace TAMService.Data.Repository
             if (assetEntity != null)
             {
                 assetEntity.Brand = asset.Brand;
-                assetEntity.ModelNumber = asset.ModelNumber;
                 assetEntity.Type = asset.Type;
                 assetEntity.HostName = asset.HostName;
+                assetEntity.TeamId = asset.TeamId;
+                assetEntity.OwnerId = asset.OwnerId;
             }
 
             return false;

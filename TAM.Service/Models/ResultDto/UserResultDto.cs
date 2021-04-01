@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using TAMService.Models.BaseDto;
 
 namespace TAMService.Models.ResultDto
 {

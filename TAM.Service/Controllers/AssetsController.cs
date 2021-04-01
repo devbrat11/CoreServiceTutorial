@@ -1,11 +1,11 @@
 ﻿using TAMService.Data.Repository;
 using TAMService.Helpers;
-using TAMService.Models.InputDto;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TAMService.Models.ResultDto;
+using TAMService.Models;
 
 namespace TAMService.Controllers
 {
@@ -25,7 +25,7 @@ namespace TAMService.Controllers
         {
             var assets = _dataStore.GetAllAssets();
 
-            var requiredAssets = new List<AssetOutputDto>();
+            var requiredAssets = new List<AssetDto>();
 
             foreach (var asset in assets)
             {
@@ -39,7 +39,7 @@ namespace TAMService.Controllers
                         owner = user.AsUserResultDto(teamDetails);
                     }
                 }
-                requiredAssets.Add(asset.AsAssetOutputDto(owner));
+                requiredAssets.Add(asset.ConvertToAssetDto());
             }
 
             if (!requiredAssets.Any())
@@ -50,9 +50,9 @@ namespace TAMService.Controllers
         }
 
         [HttpPost]
-        public IActionResult RegisterAsset([FromBody] AssetInputDto assetInput)
+        public IActionResult RegisterAsset([FromBody] AssetDto asset)
         {
-            var assetEntity = assetInput.ToEntity();
+            var assetEntity = asset.ToEntity();
             var isAssetAdded = _dataStore.TryRegisteringAsset(assetEntity);
             if (isAssetAdded)
             {
@@ -67,7 +67,7 @@ namespace TAMService.Controllers
         public IActionResult GetAsset(string serialNumber)
         {
             var asset = _dataStore.GetAsset(serialNumber);
-            AssetOutputDto resultAsset = null;
+            AssetDto resultAsset = null;
             if (asset.OwnerId != Guid.Empty)
             {
                 var user = _dataStore.GetUser(asset.OwnerId);
@@ -78,7 +78,7 @@ namespace TAMService.Controllers
                     owner = user.AsUserResultDto(teamDetails);
                 }
 
-                resultAsset = asset.AsAssetOutputDto(owner);
+                resultAsset = asset.ConvertToAssetDto();
             }
 
             if (resultAsset == null)
@@ -120,9 +120,9 @@ namespace TAMService.Controllers
         }
 
         [HttpPut]
-        public IActionResult UpdateAssetDetails([FromBody] AssetInputDto assetInput)
+        public IActionResult UpdateAssetDetails([FromBody] AssetDto asset)
         {
-            var isAssetInfoUpdated = _dataStore.TryUpdatingAssetDetails(assetInput.ToEntity());
+            var isAssetInfoUpdated = _dataStore.TryUpdatingAssetDetails(asset.ToEntity());
             _dataStore.SaveChanges();
             if (isAssetInfoUpdated)
             {

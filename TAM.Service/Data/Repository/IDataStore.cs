@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using TAM.Service.Data.Entities;
 using TAMService.Data.Entities;
+using TAMService.Models;
 
 namespace TAMService.Data.Repository
 {
@@ -8,8 +10,8 @@ namespace TAMService.Data.Repository
     {
         List<User> GetUsers();
         User GetUser(Guid id);
-        bool TryRegisteringUser(User user);
-        Tuple<bool,Guid> IsUserValid(string emailId, string password);
+        bool TryRegisteringUser(UserRegistrationDto userRegistrationInfo);
+        Tuple<bool,Guid> IsUserValid(UserCredential userCredential);
         List<Asset> GetUserAssets(Guid userId);
 
         bool TryRegisteringAsset(Asset asset);
@@ -23,7 +25,6 @@ namespace TAMService.Data.Repository
         Team GetTeamInformation(string teamName);
         List<Asset> GetTeamAssets(string teamName);
         List<User> GetTeamMembers(string teamName);
-
 
         bool SaveChanges();
     }

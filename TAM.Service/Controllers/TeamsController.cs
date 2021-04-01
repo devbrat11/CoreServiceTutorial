@@ -2,9 +2,9 @@
 using System.Linq;
 using TAMService.Data.Repository;
 using TAMService.Helpers;
-using TAMService.Models.BaseDto;
 using TAMService.Models.ResultDto;
 using Microsoft.AspNetCore.Mvc;
+using TAMService.Models;
 
 namespace TAMService.Controllers
 {
@@ -57,7 +57,7 @@ namespace TAMService.Controllers
         [HttpGet("{teamName}/assets")]
         public IActionResult GetTeamAssetsInformation(string teamName)
         {
-            var result = new List<AssetOutputDto>();
+            var result = new List<AssetDto>();
             var teamAssets = _dataStore.GetTeamAssets(teamName);
             if (teamAssets == null||!teamAssets.Any())
             {
@@ -67,7 +67,7 @@ namespace TAMService.Controllers
             foreach (var teamAsset in teamAssets)
             {
                 var user = _dataStore.GetUser(teamAsset.OwnerId);
-                result.Add(teamAsset.AsAssetOutputDto(user.AsUserResultDto()));
+                result.Add(teamAsset.ConvertToAssetDto());
             }
             return Ok(result);
         }

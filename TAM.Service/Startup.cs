@@ -1,13 +1,11 @@
-﻿
-using TAMService.Data;
-using TAMService.Data.Repository;
+﻿using TAMService.Data.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using TAMService.Data.DataStore;
 
 namespace TAMService
 {
@@ -56,15 +54,15 @@ namespace TAMService
             var dbLocation = Configuration.GetSection("DbConfiguration").GetSection("Location").Value;
             if (dbType.Equals("Sql"))
             {
-                if (dbLocation.Equals("Azure"))
+                if (dbLocation.Equals("InMemory"))
                 {
-                    var connectionString = Configuration.GetConnectionString("AzureSqlDb");
-                    services.AddDbContext<CoreServiceContext>(optionsBuilder =>
-                        optionsBuilder.UseSqlServer(connectionString));
+                    services.AddDbContext<TAMServiceContext>(x => x.UseInMemoryDatabase($"{dbType}-{dbLocation}"));
                 }
                 else
                 {
-                    services.AddDbContext<CoreServiceContext>(x => x.UseInMemoryDatabase($"{dbType}-{dbLocation}"));
+                    var connectionString = Configuration.GetConnectionString("SqlDb");
+                    services.AddDbContext<TAMServiceContext>(optionsBuilder =>
+                        optionsBuilder.UseSqlServer(connectionString));
                 }
                 services.AddScoped<IDataStore, SqlDataStore>();
             }

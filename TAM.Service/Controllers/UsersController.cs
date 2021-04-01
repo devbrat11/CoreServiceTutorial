@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TAMService.Helpers;
-using TAMService.Models.InputDto;
 using TAMService.Models.ResultDto;
+using TAMService.Models;
+using TAM.Service.Data.Entities;
 
 namespace TAMService.Controllers
 {
@@ -65,9 +66,9 @@ namespace TAMService.Controllers
         }
 
         [HttpPost("authenticate")]
-        public IActionResult ValidateUser([FromBody]UserCredentialDto userCredential)
+        public IActionResult ValidateUser([FromBody]UserCredential userCredential)
         {
-            var userValidationInfo = _dataStore.IsUserValid(userCredential.EmailId, userCredential.Password);
+            var userValidationInfo = _dataStore.IsUserValid(userCredential);
             if (userValidationInfo.Item1)
             {
                 return Ok(userValidationInfo.Item2);
@@ -79,8 +80,7 @@ namespace TAMService.Controllers
         [HttpPost]
         public IActionResult AddUser([FromBody] UserRegistrationDto userToRegister)
         {
-            var userEntity = userToRegister.ToEntity();
-            var isUserRegistered = _dataStore.TryRegisteringUser(userEntity);
+            var isUserRegistered = _dataStore.TryRegisteringUser(userToRegister);
             if (isUserRegistered)
             {
                 _dataStore.SaveChanges();

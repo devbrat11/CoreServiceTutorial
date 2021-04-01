@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TAMService.Models.InputDto
+namespace TAM.Service.Data.Entities
 {
-    public class UserCredentialDto
+    public class UserCredential
     {
-        [Required]
+        [Key]
         public string EmailId { get; set; }
-        [Required]
         public string Password { get; set; }
     }
 }
