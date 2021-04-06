@@ -27,6 +27,15 @@ namespace TAMService
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "ActionsContextApi", Version = "1.0" });
             });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,6 +54,7 @@ namespace TAMService
             app.UseSwagger();
             app.UseHttpsRedirection();
             app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "ActionsContext V1.0"); });
+            app.UseCors("CorsPolicy");
             app.UseMvc();
         }
 

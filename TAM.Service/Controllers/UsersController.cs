@@ -84,7 +84,7 @@ namespace TAMService.Controllers
             if (isUserRegistered)
             {
                 _dataStore.SaveChanges();
-                return StatusCode(201, "User registered successfully.");
+                return StatusCode(201);
             }
 
             return BadRequest();

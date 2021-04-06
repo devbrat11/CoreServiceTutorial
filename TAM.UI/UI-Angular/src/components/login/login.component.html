@@ -1,0 +1,21 @@
+
+<h2 style="text-align: center;margin-bottom: 10;">Welcome to TAM</h2>
+<body>
+    <form [formGroup]="formGroup" class="form">
+        <div class="inputRow">
+            <label class="label" for="username">Username</label>
+            <input class="input" type="text" name="userName" formControlName="userName"/>
+        </div>
+        <div class="inputRow">
+            <label class="label" for="password">Password</label>
+            <input class="input" type="password" name="password" formControlName="password" />
+        </div>
+        <button class="button" (click)="login()">
+            Login
+        </button>
+        <div>
+           <label style="text-align: center;">New User ? <a routerLink="/register"> Register</a></label>
+        </div>
+    </form>
+</body>
+
