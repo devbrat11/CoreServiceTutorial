@@ -1,4 +1,4 @@
-.vs
-TAM.Service/.vscode/
-TAM.Service/bin/
-TAM.Service/obj/
+TAM.Backend/.vs
+TAM.Backend/TAM.Service/.vscode/
+TAM.Backend/TAM.Service/bin/
+TAM.Backend/TAM.Service/obj/
