@@ -17,4 +17,12 @@ namespace TAMService.Data.DataStore
         public DbSet<UserCredential> UserCredentials { get; set; }
 
     }
+
+    public static class EntityExtensions
+    {
+        public static void Clear<T>(this DbSet<T> dbSet) where T : class
+        {
+            dbSet.RemoveRange(dbSet);
+        }
+    }
 }

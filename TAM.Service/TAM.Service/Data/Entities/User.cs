@@ -13,5 +13,7 @@ namespace TAMService.Data.Entities
         public DateTime DateOfBirth { get; set; }
         public string Team { get; set; }
         public string EmailId { get; set; }
+
+        public string Test { get; set; }
     }
 }
