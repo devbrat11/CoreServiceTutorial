@@ -23,6 +23,11 @@ namespace TAMService
         public void ConfigureServices(IServiceCollection services)
         {
             ConfigureDb(services);
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAny",
+                    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "TAM", Version = "1.0" });
@@ -46,6 +51,7 @@ namespace TAMService
             }
 
             dbContext.Database.Migrate();
+            app.UseCors("AllowAny");
             app.UseSwagger();
             app.UseHttpsRedirection();
             app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "TAM V1.0"); });

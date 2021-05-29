@@ -54,12 +54,11 @@ namespace TAMService.Data.Repository
             var userCredentials = _context.UserCredentials.FirstOrDefault(x => x.UserID.Equals(userCredential.UserID));
             if (userCredentials != null)
             {
-                var user = _context.Users.FirstOrDefault(x => x.EmailId.Equals(userCredential.UserID));
-                if (userCredentials.Password.Equals(userCredential.Password.GetHash()))
+                if (userCredentials.Password.Equals(userCredential.Password))
                 {
                     // creating a session.
-                    _context.Sessions.Add(new Session() { UserID = userCredential.UserID, });
-                    var sessionID = _context.Sessions.FirstOrDefault(x => x.UserID.Equals(user.EmailId))?.SessionID;
+                    _context.Sessions.Add(new Session() { UserID = userCredential.UserID,SessionID = Guid.NewGuid() });
+                    var sessionID = _context.Sessions.FirstOrDefault(x => x.UserID.Equals(userCredential.UserID))?.SessionID;
                     return new Tuple<bool, Guid>(true, sessionID.Value);
                 }
             }
