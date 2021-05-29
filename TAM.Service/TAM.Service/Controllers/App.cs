@@ -11,19 +11,25 @@ namespace TAM.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DB : ControllerBase
+    public class App : ControllerBase
     {
         private readonly TAMServiceContext _dbContext;
         private readonly IDataStore _dataStore;
 
-        public DB(TAMServiceContext dbContext, IDataStore dataStore)
+        public App(TAMServiceContext dbContext, IDataStore dataStore)
         {
             _dbContext = dbContext;
             _dataStore = dataStore;
         }
 
-        [HttpPost("clear")]
-        public IActionResult ValidateUser()
+        [HttpGet]
+        public IActionResult AppState()
+        {
+            return Ok("App is running...");
+        }
+
+        [HttpPost("clear-db")]
+        public IActionResult ClearData()
         {
             _dbContext.Users.Clear();
             _dbContext.UserCredentials.Clear();
@@ -35,7 +41,7 @@ namespace TAM.Service.Controllers
         }
 
 
-        [HttpPost("seed")]
+        [HttpPost("seed-db")]
         public IActionResult Seed()
         {
             _dataStore.TryAddingTeam(new Team() 
