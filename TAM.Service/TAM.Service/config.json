@@ -1,0 +1,14 @@
+{
+    "UserName":"",
+    "Password":"",
+    "ConnectionStrings": {
+      "SQL": {
+        "ExpressDB": "Data Source=DEV\\SQLEXPRESS;Initial Catalog=TAMDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+        "ProjectsV13": "Data Source=(localdb)\\ProjectsV13;Initial Catalog=TAMDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+        "MSSQL": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TAMDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+      },
+      "NOSQL":{
+          "MongoDB": ""
+      }
+    }
+  }

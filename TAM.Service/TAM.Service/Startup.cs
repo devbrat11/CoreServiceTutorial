@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TAMService.Data.DataStore;
 using Microsoft.Extensions.Hosting;
+using TAM.Service.Helpers;
 
 namespace TAMService
 {
@@ -45,7 +46,7 @@ namespace TAMService
                 app.UseHsts();
             }
 
-            dbContext.Database.Migrate();
+            dbContext.Database.EnsureCreated();
             app.UseSwagger();
             app.UseHttpsRedirection();
             app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "TAM V1.0"); });
@@ -60,12 +61,15 @@ namespace TAMService
         private void ConfigureDb(IServiceCollection services)
         {
             var dbType = Configuration.GetSection("DbConfiguration").GetSection("Type").Value;
-            var dbLocation = Configuration.GetSection("DbConfiguration").GetSection("Location").Value;
-            if (dbType.Equals("Sql"))
+            string connectionString = new ConfigurationReader(Configuration).GetConnectionString(dbType);
+            if (!string.IsNullOrEmpty(connectionString))
             {
-                var connectionString = Configuration.GetConnectionString("SqlDb");
-                services.AddDbContext<TAMServiceContext>(x => x.UseSqlServer(connectionString));
-                services.AddScoped<IDataStore, SqlDataStore>();
+                if (dbType.Equals("SQL"))
+                {
+                    services.AddDbContext<TAMServiceContext>(x => x.UseSqlServer(connectionString));
+                    services.AddScoped<IDataStore, SqlDataStore>();
+                }
+               
             }
         }
 
