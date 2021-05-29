@@ -35,7 +35,7 @@ namespace TAMService.Controllers
                     var user = _dataStore.GetUser(asset.OwnerId);
                     if (user != null)
                     {
-                        var teamDetails = _dataStore.GetTeamInformation(user.Team);
+                        var teamDetails = _dataStore.GetTeam(user.Team);
                         owner = user.AsUserResultDto(teamDetails);
                     }
                 }
@@ -74,7 +74,7 @@ namespace TAMService.Controllers
                 UserResultDto owner = null;
                 if (user != null)
                 {
-                    var teamDetails = _dataStore.GetTeamInformation(user.Team);
+                    var teamDetails = _dataStore.GetTeam(user.Team);
                     owner = user.AsUserResultDto(teamDetails);
                 }
 
@@ -101,7 +101,7 @@ namespace TAMService.Controllers
                 }
 
                 var user = _dataStore.GetUser(asset.OwnerId);
-                var team = _dataStore.GetTeamInformation(user.Team);
+                var team = _dataStore.GetTeam(user.Team);
                 return Ok(user.AsUserResultDto(team));
             }
             return NotFound("Asset allocated to user does not exists.");

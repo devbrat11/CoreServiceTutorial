@@ -7,42 +7,43 @@ using System.Linq;
 using TAMService.Data.DataStore;
 using TAM.Service.Data.Entities;
 using TAMService.Models;
+using TAM.Service.Models.Enum;
 
 namespace TAMService.Data.Repository
 {
     public class SqlDataStore : IDataStore
     {
-        private readonly TAMServiceContext _coreServiceContext;
+        private readonly TAMServiceContext _context;
 
         public SqlDataStore(TAMServiceContext coreServiceContext)
         {
-            _coreServiceContext = coreServiceContext;
+            _context = coreServiceContext;
         }
 
         public List<User> GetUsers()
         {
-            var users = _coreServiceContext.Users.ToList();
+            var users = _context.Users.ToList();
             return users;
         }
 
         public User GetUser(Guid id)
         {
-            var user = _coreServiceContext.Users.FirstOrDefault(x => x.Id.Equals(id));
+            var user = _context.Users.FirstOrDefault(x => x.PK.Equals(id));
             return user;
         }
 
-        public bool TryRegisteringUser(UserRegistrationDto userRegistrationInfo)
+        public bool TryRegisteringUser(UserRegistrationInfo userRegistrationInfo)
         {
-            if (!_coreServiceContext.Users.Any(x => x.EmailId.Equals(userRegistrationInfo.EmailId)))
+            if (!_context.Users.Any(x => x.EmailId.Equals(userRegistrationInfo.EmailId)))
             {
                 var user = userRegistrationInfo.ToEntity();
                 var userCredentials = new UserCredential()
                 {
-                    EmailId = user.EmailId,
+                    UserID = user.EmailId,
                     Password = userRegistrationInfo.Password.GetHash()
                 };
-                _coreServiceContext.Users.Add(user);
-                _coreServiceContext.UserCredentials.Add(userCredentials);
+                _context.Users.Add(user);
+                _context.UserCredentials.Add(userCredentials);
                 return true;
             }
             return false;
@@ -50,13 +51,16 @@ namespace TAMService.Data.Repository
 
         public Tuple<bool, Guid> IsUserValid(UserCredential userCredential)
         {
-            var userCredentials = _coreServiceContext.UserCredentials.FirstOrDefault(x => x.EmailId.Equals(userCredential.EmailId));
+            var userCredentials = _context.UserCredentials.FirstOrDefault(x => x.UserID.Equals(userCredential.UserID));
             if (userCredentials != null)
             {
-                var user = _coreServiceContext.Users.FirstOrDefault(x => x.EmailId.Equals(userCredential.EmailId));
+                var user = _context.Users.FirstOrDefault(x => x.EmailId.Equals(userCredential.UserID));
                 if (userCredentials.Password.Equals(userCredential.Password.GetHash()))
                 {
-                    return new Tuple<bool, Guid>(true, user.Id);
+                    // creating a session.
+                    _context.Sessions.Add(new Session() { UserID = userCredential.UserID, });
+                    var sessionID = _context.Sessions.FirstOrDefault(x => x.UserID.Equals(user.EmailId))?.SessionID;
+                    return new Tuple<bool, Guid>(true, sessionID.Value);
                 }
             }
             return new Tuple<bool, Guid>(false, Guid.Empty);
@@ -64,23 +68,23 @@ namespace TAMService.Data.Repository
 
         public List<Asset> GetUserAssets(Guid userId)
         {
-            return _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(userId)).ToList();
+            return _context.Assets.Where(x => x.OwnerId.Equals(userId)).ToList();
         }
 
         public bool TryRegisteringAsset(Asset asset)
         {
-            if (_coreServiceContext.Assets.Any(x => x.SerialNumber == asset.SerialNumber))
+            if (_context.Assets.Any(x => x.SerialNumber == asset.SerialNumber))
             {
                 return false;
             }
 
-            _coreServiceContext.Assets.Add(asset);
+            _context.Assets.Add(asset);
             return true;
         }
 
         public Tuple<bool, string> TryAllocatingAssetToUser(string assetSerialNumber, Guid userId)
         {
-            var asset = _coreServiceContext.Assets.FirstOrDefault(x => x.SerialNumber == assetSerialNumber);
+            var asset = _context.Assets.FirstOrDefault(x => x.SerialNumber == assetSerialNumber);
             if (asset != null)
             {
                 if (asset.OwnerId != Guid.Empty)
@@ -97,7 +101,7 @@ namespace TAMService.Data.Repository
 
         public bool TryUpdatingAssetDetails(Asset asset)
         {
-            var assetEntity = _coreServiceContext.Assets.FirstOrDefault(x => x.SerialNumber == asset.SerialNumber);
+            var assetEntity = _context.Assets.FirstOrDefault(x => x.SerialNumber == asset.SerialNumber);
             if (assetEntity != null)
             {
                 assetEntity.Brand = asset.Brand;
@@ -105,55 +109,55 @@ namespace TAMService.Data.Repository
                 assetEntity.HostName = asset.HostName;
                 assetEntity.TeamId = asset.TeamId;
                 assetEntity.OwnerId = asset.OwnerId;
+                return true;
             }
 
             return false;
         }
 
-
         public List<Asset> GetAllAssets()
         {
-            var assets = _coreServiceContext.Assets.ToList();
+            var assets = _context.Assets.ToList();
             return assets;
         }
 
         public Asset GetAsset(string serialNumber)
         {
-            var asset = _coreServiceContext.Assets.FirstOrDefault(x => x.SerialNumber.Equals(serialNumber));
+            var asset = _context.Assets.FirstOrDefault(x => x.SerialNumber.Equals(serialNumber));
             return asset;
         }
 
         public bool TryAddingTeam(Team team)
         {
-            if (_coreServiceContext.Teams.Any(x => x.Name.Equals(team.Name, StringComparison.InvariantCultureIgnoreCase)))
+            if (_context.Teams.Any(x => x.Name.Equals(team.Name)))
             {
                 return false;
             }
 
-            _coreServiceContext.Teams.Add(team);
+            _context.Teams.Add(team);
             return true;
         }
 
-        public List<Team> GetAllTeamsInformation()
+        public List<Team> GetAllTeams()
         {
-            var teams = _coreServiceContext.Teams.ToList();
+            var teams = _context.Teams.ToList();
             return teams;
         }
 
-        public Team GetTeamInformation(string teamName)
+        public Team GetTeam(string teamName)
         {
-            var team = _coreServiceContext.Teams.FirstOrDefault(x => x.Name.Equals(teamName, StringComparison.InvariantCultureIgnoreCase));
+            var team = _context.Teams.FirstOrDefault(x => x.Name.Equals(teamName, StringComparison.InvariantCultureIgnoreCase));
             return team;
         }
 
         public List<Asset> GetTeamAssets(string teamName)
         {
             var teamAssets = new List<Asset>();
-            var users = _coreServiceContext.Users.Where(x =>
+            var users = _context.Users.Where(x =>
                 x.Team.Equals(teamName, StringComparison.InvariantCultureIgnoreCase)).ToList();
             foreach (var user in users)
             {
-                var userAssets = _coreServiceContext.Assets.Where(x => x.OwnerId.Equals(user.Id));
+                var userAssets = _context.Assets.Where(x => x.OwnerId.Equals(user.PK));
                 teamAssets.AddRange(userAssets);
             }
 
@@ -162,14 +166,14 @@ namespace TAMService.Data.Repository
 
         public List<User> GetTeamMembers(string teamName)
         {
-            var users = _coreServiceContext.Users.Where(x =>
+            var users = _context.Users.Where(x =>
                 x.Team.Equals(teamName, StringComparison.InvariantCultureIgnoreCase)).ToList();
             return users;
         }
 
         public bool SaveChanges()
         {
-            _coreServiceContext.SaveChanges();
+            _context.SaveChanges();
             return true;
         }
 

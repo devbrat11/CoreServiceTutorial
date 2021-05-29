@@ -3,11 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TAMService.Models
 {
-    public class UserRegistrationDto
+    public class UserRegistrationInfo
     {
         [Required]
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Name { get; set; }
         public DateTime DateOfBirth { get; set; }
         [Required]
         public string EmailId { get; set; }

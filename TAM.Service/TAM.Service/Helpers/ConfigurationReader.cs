@@ -22,6 +22,7 @@ namespace TAM.Service.Helpers
         public string GetConnectionString(string dbType)
         {
             var server = _configuration.GetSection("DbConfiguration").GetSection("Server").Value;
+           
             string connectionString = _localConfiguration.ConnectionStrings[dbType][server];
             return connectionString;
         }

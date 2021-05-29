@@ -1,7 +1,6 @@
 ﻿using TAMService.Data.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +45,7 @@ namespace TAMService
                 app.UseHsts();
             }
 
-            dbContext.Database.EnsureCreated();
+            dbContext.Database.Migrate();
             app.UseSwagger();
             app.UseHttpsRedirection();
             app.UseSwaggerUI(x => { x.SwaggerEndpoint("/swagger/v1/swagger.json", "TAM V1.0"); });
@@ -61,7 +60,13 @@ namespace TAMService
         private void ConfigureDb(IServiceCollection services)
         {
             var dbType = Configuration.GetSection("DbConfiguration").GetSection("Type").Value;
-            string connectionString = new ConfigurationReader(Configuration).GetConnectionString(dbType);
+            var connectionString = Configuration.GetConnectionString("SQL");
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                connectionString = new ConfigurationReader(Configuration).GetConnectionString(dbType);
+            }
+
             if (!string.IsNullOrEmpty(connectionString))
             {
                 if (dbType.Equals("SQL"))

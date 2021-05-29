@@ -22,7 +22,7 @@ namespace TAMService.Controllers
         [HttpGet]
         public IActionResult GetTeams()
         {
-            var teams = _dataStore.GetAllTeamsInformation();
+            var teams = _dataStore.GetAllTeams();
             if (teams != null&&teams.Count>0)
             {
                 return Ok(teams);
@@ -46,7 +46,7 @@ namespace TAMService.Controllers
         [HttpGet("{teamName}")]
         public IActionResult GetTeams(string teamName)
         {
-            var team = _dataStore.GetTeamInformation(teamName);
+            var team = _dataStore.GetTeam(teamName);
             if (team != null)
             {
                 return Ok(team);
@@ -84,7 +84,7 @@ namespace TAMService.Controllers
 
             foreach (var teamMember in teamMembers)
             {
-                var assets = _dataStore.GetUserAssets(teamMember.Id);
+                var assets = _dataStore.GetUserAssets(teamMember.PK);
                 result.Add(teamMember.AsUserResultDto(null, assets));
             }
             return Ok(result);

@@ -10,7 +10,7 @@ namespace TAMService.Data.Repository
     {
         List<User> GetUsers();
         User GetUser(Guid id);
-        bool TryRegisteringUser(UserRegistrationDto userRegistrationInfo);
+        bool TryRegisteringUser(UserRegistrationInfo userRegistrationInfo);
         Tuple<bool,Guid> IsUserValid(UserCredential userCredential);
         List<Asset> GetUserAssets(Guid userId);
 
@@ -21,8 +21,8 @@ namespace TAMService.Data.Repository
         Asset GetAsset(string serialNumber);
 
         bool TryAddingTeam(Team team);
-        List<Team> GetAllTeamsInformation();
-        Team GetTeamInformation(string teamName);
+        List<Team> GetAllTeams();
+        Team GetTeam(string teamName);
         List<Asset> GetTeamAssets(string teamName);
         List<User> GetTeamMembers(string teamName);
 

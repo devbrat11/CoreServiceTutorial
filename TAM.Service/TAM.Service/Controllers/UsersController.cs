@@ -29,8 +29,8 @@ namespace TAMService.Controllers
             var resultUsers = new List<UserResultDto>();
             foreach (var user in users)
             {
-                var team = _dataStore.GetTeamInformation(user.Team);
-                var assets = _dataStore.GetUserAssets(user.Id);
+                var team = _dataStore.GetTeam(user.Team);
+                var assets = _dataStore.GetUserAssets(user.PK);
                 resultUsers.Add(user.AsUserResultDto(team, assets));
             }
             if (!resultUsers.Any())
@@ -48,8 +48,8 @@ namespace TAMService.Controllers
             {
                 return NotFound($"User not found.");
             }
-            var team = _dataStore.GetTeamInformation(user.Team);
-            var assets = _dataStore.GetUserAssets(user.Id);
+            var team = _dataStore.GetTeam(user.Team);
+            var assets = _dataStore.GetUserAssets(user.PK);
             var resultUser = user.AsUserResultDto(team, assets);
             return Ok(resultUser);
         }
@@ -78,7 +78,7 @@ namespace TAMService.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddUser([FromBody] UserRegistrationDto userToRegister)
+        public IActionResult AddUser([FromBody] UserRegistrationInfo userToRegister)
         {
             var isUserRegistered = _dataStore.TryRegisteringUser(userToRegister);
             if (isUserRegistered)
@@ -91,13 +91,13 @@ namespace TAMService.Controllers
         }
 
         [HttpPut]
-        public IActionResult UpdateUser(Guid userId, [FromBody] UserRegistrationDto userRegistration)
+        public IActionResult UpdateUser(Guid userId, [FromBody] UserRegistrationInfo userRegistration)
         {
             return Ok();
         }
 
         [HttpPatch]
-        public IActionResult UpdateUserPartially(Guid userId, [FromBody] JsonPatchDocument<UserRegistrationDto> user)
+        public IActionResult UpdateUserPartially(Guid userId, [FromBody] JsonPatchDocument<UserRegistrationInfo> user)
         {
             return Ok();
         }

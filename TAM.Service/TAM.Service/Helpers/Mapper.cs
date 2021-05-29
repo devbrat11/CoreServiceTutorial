@@ -9,11 +9,11 @@ namespace TAMService.Helpers
 {
     public static class Mapper
     {
-        public static User ToEntity(this UserRegistrationDto userRegistrationDto)
+        public static User ToEntity(this UserRegistrationInfo userRegistrationDto)
         {
             return new User
             {
-                Name = userRegistrationDto.FirstName + " " + userRegistrationDto.LastName,
+                Name = userRegistrationDto.Name,
                 DateOfBirth = userRegistrationDto.DateOfBirth,
                 Team = userRegistrationDto.Team,
                 EmailId = userRegistrationDto.EmailId,
@@ -51,7 +51,7 @@ namespace TAMService.Helpers
         {
             var resultUser = new UserResultDto
             {
-                Id = user.Id,
+                Id = user.PK,
                 Name = user.Name,
                 DateOfBirth = user.DateOfBirth,
                 EmailId = user.EmailId

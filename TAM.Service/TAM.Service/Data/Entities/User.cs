@@ -7,13 +7,11 @@ namespace TAMService.Data.Entities
     public class User
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key]
-        public Guid Id { get; set; }
+        public Guid PK { get; set; }
         public string Name { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Team { get; set; }
+        [Key]
         public string EmailId { get; set; }
-
-        public string Test { get; set; }
     }
 }
