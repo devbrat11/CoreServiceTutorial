@@ -1,15 +1,16 @@
-﻿using TAMService.Data.Repository;
+﻿using TAM.Service.Data.Repository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TAMService.Helpers;
-using TAMService.Models.ResultDto;
-using TAMService.Models;
+using TAM.Service.Helpers;
+using TAM.Service.Models.ResultDto;
+using TAM.Service.Models;
 using TAM.Service.Data.Entities;
+using Microsoft.Extensions.Primitives;
 
-namespace TAMService.Controllers
+namespace TAM.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -26,18 +27,32 @@ namespace TAMService.Controllers
         public IActionResult GetUsers()
         {
             var users = _dataStore.GetUsers();
-            var resultUsers = new List<UserResultDto>();
+            var resultUsers = new List<UserDetails>();
             foreach (var user in users)
             {
                 var team = _dataStore.GetTeam(user.Team);
                 var assets = _dataStore.GetUserAssets(user.PK);
-                resultUsers.Add(user.AsUserResultDto(team, assets));
+                resultUsers.Add(user.ToDto(team, assets));
             }
             if (!resultUsers.Any())
             {
                 return NotFound();
             }
             return Ok(resultUsers);
+        }
+
+        [HttpPost]
+        public IActionResult AddUser([FromBody] UserRegistrationInfo userRegistrationInfo)
+        {
+            var registrationInfo = userRegistrationInfo.ToEntity();
+            var isUserRegistered = _dataStore.TryRegisteringUser(registrationInfo.Item1, registrationInfo.Item2);
+            if (isUserRegistered)
+            {
+                _dataStore.SaveChanges();
+                return StatusCode(201);
+            }
+
+            return BadRequest();
         }
 
         [HttpGet("{id}")]
@@ -50,7 +65,7 @@ namespace TAMService.Controllers
             }
             var team = _dataStore.GetTeam(user.Team);
             var assets = _dataStore.GetUserAssets(user.PK);
-            var resultUser = user.AsUserResultDto(team, assets);
+            var resultUser = user.ToDto(team, assets);
             return Ok(resultUser);
         }
 
@@ -66,28 +81,15 @@ namespace TAMService.Controllers
         }
 
         [HttpPost("authenticate")]
-        public IActionResult ValidateUser([FromBody]UserCredential userCredential)
+        public IActionResult ValidateUser([FromBody] LoginDetails loginDetails)
         {
-            var userValidationInfo = _dataStore.IsUserValid(userCredential);
+            var userValidationInfo = _dataStore.IsUserValid(loginDetails);
             if (userValidationInfo.Item1)
             {
                 return Ok(userValidationInfo.Item2);
             }
 
-            return BadRequest("Invalid Credentials !");
-        }
-
-        [HttpPost]
-        public IActionResult AddUser([FromBody] UserRegistrationInfo userToRegister)
-        {
-            var isUserRegistered = _dataStore.TryRegisteringUser(userToRegister);
-            if (isUserRegistered)
-            {
-                _dataStore.SaveChanges();
-                return StatusCode(201);
-            }
-
-            return BadRequest();
+            return NotFound("Invalid Credentials !");
         }
 
         [HttpPut]

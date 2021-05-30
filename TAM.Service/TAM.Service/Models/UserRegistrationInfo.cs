@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace TAMService.Models
+namespace TAM.Service.Models
 {
     public class UserRegistrationInfo
     {

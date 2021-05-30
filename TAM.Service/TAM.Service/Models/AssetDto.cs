@@ -1,7 +1,7 @@
 ﻿using System;
 using TAM.Service.Models.Enum;
 
-namespace TAMService.Models
+namespace TAM.Service.Models
 {
     public class AssetDto
     {

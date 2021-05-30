@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using TAM.Service.Models.Enum;
 
-namespace TAMService.Data.Entities
+namespace TAM.Service.Data.Entities
 {
     public class Asset
     {

@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using TAM.Service.Data.Entities;
-using TAMService.Data.Entities;
-using TAMService.Models;
 
-namespace TAMService.Data.Repository
+namespace TAM.Service.Data.Repository
 {
     public interface IDataStore
     {
         List<User> GetUsers();
         User GetUser(Guid id);
-        bool TryRegisteringUser(UserRegistrationInfo userRegistrationInfo);
-        Tuple<bool,Guid> IsUserValid(UserCredential userCredential);
+        bool TryRegisteringUser(User user, LoginDetails userCredential);
+        Tuple<bool,Guid> IsUserValid(LoginDetails loginDetails);
         List<Asset> GetUserAssets(Guid userId);
 
         bool TryRegisteringAsset(Asset asset);

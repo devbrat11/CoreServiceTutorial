@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using TAM.Service.Models.Enum;
-using TAMService.Data.DataStore;
-using TAMService.Data.Entities;
-using TAMService.Data.Repository;
-using TAMService.Helpers;
-using TAMService.Models;
+using TAM.Service.Data.DataStore;
+using TAM.Service.Data.Entities;
+using TAM.Service.Data.Repository;
+using TAM.Service.Models;
+using TAM.Service.Helpers;
 
 namespace TAM.Service.Controllers
 {
@@ -28,19 +28,6 @@ namespace TAM.Service.Controllers
             return Ok("App is running...");
         }
 
-        [HttpPost("clear-db")]
-        public IActionResult ClearData()
-        {
-            _dbContext.Users.Clear();
-            _dbContext.UserCredentials.Clear();
-            _dbContext.Teams.Clear();
-            _dbContext.Assets.Clear();
-            _dbContext.Sessions.Clear();
-            _dbContext.SaveChanges();
-            return Ok();
-        }
-
-
         [HttpPost("seed-db")]
         public IActionResult Seed()
         {
@@ -52,7 +39,6 @@ namespace TAM.Service.Controllers
                 Manager = "Jon Snow",
                 Lead = "Jon Snow"
             });
-            _dataStore.SaveChanges();
 
             _dataStore.TryRegisteringAsset(new Asset()
             {
@@ -65,20 +51,34 @@ namespace TAM.Service.Controllers
 
             });
 
-            _dataStore.SaveChanges();
-
-            _dataStore.TryRegisteringUser(new UserRegistrationInfo()
+            var registrationInfo = new UserRegistrationInfo()
             {
                 Name = "Devbrat",
                 DateOfBirth = new DateTime(1993, 07, 11),
                 EmailId = "test@TAM.com",
                 Password = "test1234",
                 Team = "NightWatch",
-            });
+            }.ToEntity();
+
+            _dataStore.TryRegisteringUser(registrationInfo.Item1, registrationInfo.Item2);
 
             _dataStore.SaveChanges();
 
             return Ok();
         }
+
+        [HttpDelete("clear-db")]
+        public IActionResult ClearData()
+        {
+            _dbContext.Users.Clear();
+            _dbContext.UserCredentials.Clear();
+            _dbContext.Teams.Clear();
+            _dbContext.Assets.Clear();
+            _dbContext.Sessions.Clear();
+            _dbContext.SaveChanges();
+            return Ok();
+        }
+
+
     }
 }

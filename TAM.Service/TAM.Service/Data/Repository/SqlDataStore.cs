@@ -1,15 +1,12 @@
-﻿using TAMService.Data.Entities;
-using TAMService.Helpers;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TAMService.Data.DataStore;
+using TAM.Service.Data.DataStore;
 using TAM.Service.Data.Entities;
-using TAMService.Models;
-using TAM.Service.Models.Enum;
+using TAM.Service.Helpers;
 
-namespace TAMService.Data.Repository
+namespace TAM.Service.Data.Repository
 {
     public class SqlDataStore : IDataStore
     {
@@ -32,34 +29,38 @@ namespace TAMService.Data.Repository
             return user;
         }
 
-        public bool TryRegisteringUser(UserRegistrationInfo userRegistrationInfo)
+        public bool TryRegisteringUser(User user, LoginDetails userCredential)
         {
-            if (!_context.Users.Any(x => x.EmailId.Equals(userRegistrationInfo.EmailId)))
+            if (!_context.Users.Any(x => x.EmailId.Equals(user.EmailId)))
             {
-                var user = userRegistrationInfo.ToEntity();
-                var userCredentials = new UserCredential()
+               if(!_context.UserCredentials.Any(x => x.UserID.Equals(user.EmailId)))
                 {
-                    UserID = user.EmailId,
-                    Password = userRegistrationInfo.Password.GetHash()
-                };
-                _context.Users.Add(user);
-                _context.UserCredentials.Add(userCredentials);
-                return true;
+                    _context.Users.Add(user);
+                    _context.UserCredentials.Add(userCredential);
+                    return true;
+                }
             }
             return false;
         }
 
-        public Tuple<bool, Guid> IsUserValid(UserCredential userCredential)
+        public Tuple<bool, Guid> IsUserValid(LoginDetails loginDetails)
         {
-            var userCredentials = _context.UserCredentials.FirstOrDefault(x => x.UserID.Equals(userCredential.UserID));
-            if (userCredentials != null)
+            var storedCredential = _context.UserCredentials.FirstOrDefault(x => x.UserID.Equals(loginDetails.UserID));
+            if (storedCredential != null)
             {
-                if (userCredentials.Password.Equals(userCredential.Password))
+                if (storedCredential.Password.Equals(loginDetails.Password.GetHash()))
                 {
-                    // creating a session.
-                    _context.Sessions.Add(new Session() { UserID = userCredential.UserID,SessionID = Guid.NewGuid() });
-                    var sessionID = _context.Sessions.FirstOrDefault(x => x.UserID.Equals(userCredential.UserID))?.SessionID;
-                    return new Tuple<bool, Guid>(true, sessionID.Value);
+                    var sessionID = Guid.NewGuid();
+                    var session =_context.Sessions.FirstOrDefault(x=>x.UserID.Equals(loginDetails.UserID));
+                    // creating a session
+                    if (session == null)
+                    {
+                        _context.Sessions.Add(new Session() { UserID = loginDetails.UserID, SessionID = sessionID });
+                        _context.SaveChanges();
+
+                        return new Tuple<bool, Guid>(true, sessionID);
+                    }
+                   
                 }
             }
             return new Tuple<bool, Guid>(false, Guid.Empty);
@@ -145,7 +146,7 @@ namespace TAMService.Data.Repository
 
         public Team GetTeam(string teamName)
         {
-            var team = _context.Teams.FirstOrDefault(x => x.Name.Equals(teamName, StringComparison.InvariantCultureIgnoreCase));
+            var team = _context.Teams.FirstOrDefault(x => x.Name.Equals(teamName));
             return team;
         }
 

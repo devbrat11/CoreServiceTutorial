@@ -1,13 +1,13 @@
-﻿using TAMService.Data.Repository;
-using TAMService.Helpers;
+﻿using TAM.Service.Data.Repository;
+using TAM.Service.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TAMService.Models.ResultDto;
-using TAMService.Models;
+using TAM.Service.Models.ResultDto;
+using TAM.Service.Models;
 
-namespace TAMService.Controllers
+namespace TAM.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -29,17 +29,17 @@ namespace TAMService.Controllers
 
             foreach (var asset in assets)
             {
-                UserResultDto owner = null;
+                UserDetails owner = null;
                 if (asset.OwnerId != Guid.Empty)
                 {
                     var user = _dataStore.GetUser(asset.OwnerId);
                     if (user != null)
                     {
                         var teamDetails = _dataStore.GetTeam(user.Team);
-                        owner = user.AsUserResultDto(teamDetails);
+                        owner = user.ToDto(teamDetails);
                     }
                 }
-                requiredAssets.Add(asset.ConvertToAssetDto());
+                requiredAssets.Add(asset.ToDto());
             }
 
             if (!requiredAssets.Any())
@@ -71,14 +71,14 @@ namespace TAMService.Controllers
             if (asset.OwnerId != Guid.Empty)
             {
                 var user = _dataStore.GetUser(asset.OwnerId);
-                UserResultDto owner = null;
+                UserDetails owner = null;
                 if (user != null)
                 {
                     var teamDetails = _dataStore.GetTeam(user.Team);
-                    owner = user.AsUserResultDto(teamDetails);
+                    owner = user.ToDto(teamDetails);
                 }
 
-                resultAsset = asset.ConvertToAssetDto();
+                resultAsset = asset.ToDto();
             }
 
             if (resultAsset == null)
@@ -102,7 +102,7 @@ namespace TAMService.Controllers
 
                 var user = _dataStore.GetUser(asset.OwnerId);
                 var team = _dataStore.GetTeam(user.Team);
-                return Ok(user.AsUserResultDto(team));
+                return Ok(user.ToDto(team));
             }
             return NotFound("Asset allocated to user does not exists.");
         }

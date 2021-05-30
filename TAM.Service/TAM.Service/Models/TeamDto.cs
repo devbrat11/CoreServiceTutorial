@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace TAMService.Models
+namespace TAM.Service.Models
 {
     public class TeamDto
     {
+        public Guid ID { get; set; }
         [Required]
         public string Name { get; set; }
         public string Department { get; set; }

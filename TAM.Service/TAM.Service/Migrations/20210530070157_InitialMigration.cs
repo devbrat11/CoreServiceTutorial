@@ -39,8 +39,8 @@ namespace TAM.Service.Migrations
                 name: "Teams",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Department = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ParentTeam = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Manager = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -48,7 +48,7 @@ namespace TAM.Service.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teams", x => x.Name);
+                    table.PrimaryKey("PK_Teams", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -67,15 +67,15 @@ namespace TAM.Service.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    EmailId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PK = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Team = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Team = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.EmailId);
+                    table.PrimaryKey("PK_Users", x => x.PK);
                 });
         }
 

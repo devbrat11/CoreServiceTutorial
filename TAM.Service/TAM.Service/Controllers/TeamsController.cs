@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TAMService.Data.Repository;
-using TAMService.Helpers;
-using TAMService.Models.ResultDto;
+using TAM.Service.Data.Repository;
+using TAM.Service.Helpers;
+using TAM.Service.Models.ResultDto;
 using Microsoft.AspNetCore.Mvc;
-using TAMService.Models;
+using TAM.Service.Models;
 
-namespace TAMService.Controllers
+namespace TAM.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -67,7 +67,7 @@ namespace TAMService.Controllers
             foreach (var teamAsset in teamAssets)
             {
                 var user = _dataStore.GetUser(teamAsset.OwnerId);
-                result.Add(teamAsset.ConvertToAssetDto());
+                result.Add(teamAsset.ToDto());
             }
             return Ok(result);
         }
@@ -75,7 +75,7 @@ namespace TAMService.Controllers
         [HttpGet("{teamName}/users")]
         public IActionResult GetTeamMembers(string teamName)
         {
-            var result = new List<UserResultDto>();
+            var result = new List<UserDetails>();
             var teamMembers = _dataStore.GetTeamMembers(teamName);
             if (teamMembers == null||!teamMembers.Any())
             {
@@ -85,7 +85,7 @@ namespace TAMService.Controllers
             foreach (var teamMember in teamMembers)
             {
                 var assets = _dataStore.GetUserAssets(teamMember.PK);
-                result.Add(teamMember.AsUserResultDto(null, assets));
+                result.Add(teamMember.ToDto(null, assets));
             }
             return Ok(result);
         }

@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TAMService.Data.DataStore;
+using TAM.Service.Data.DataStore;
 
 namespace TAM.Service.Migrations
 {
     [DbContext(typeof(TAMServiceContext))]
-    [Migration("20210529101632_Initial Migration")]
+    [Migration("20210530070157_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,34 +21,7 @@ namespace TAM.Service.Migrations
                 .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("TAM.Service.Data.Entities.Session", b =>
-                {
-                    b.Property<string>("UserID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("SessionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UserID");
-
-                    b.ToTable("Sessions");
-                });
-
-            modelBuilder.Entity("TAM.Service.Data.Entities.UserCredential", b =>
-                {
-                    b.Property<string>("UserID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserID");
-
-                    b.ToTable("UserCredentials");
-                });
-
-            modelBuilder.Entity("TAMService.Data.Entities.Asset", b =>
+            modelBuilder.Entity("TAM.Service.Data.Entities.Asset", b =>
                 {
                     b.Property<string>("SerialNumber")
                         .HasColumnType("nvarchar(450)");
@@ -73,17 +46,40 @@ namespace TAM.Service.Migrations
                     b.ToTable("Assets");
                 });
 
-            modelBuilder.Entity("TAMService.Data.Entities.Team", b =>
+            modelBuilder.Entity("TAM.Service.Data.Entities.LoginDetails", b =>
                 {
-                    b.Property<string>("Name")
+                    b.Property<string>("UserID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Department")
+                    b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
+                    b.HasKey("UserID");
+
+                    b.ToTable("UserCredentials");
+                });
+
+            modelBuilder.Entity("TAM.Service.Data.Entities.Session", b =>
+                {
+                    b.Property<string>("UserID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("SessionID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserID");
+
+                    b.ToTable("Sessions");
+                });
+
+            modelBuilder.Entity("TAM.Service.Data.Entities.Team", b =>
+                {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Department")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Lead")
                         .HasColumnType("nvarchar(max)");
@@ -91,33 +87,36 @@ namespace TAM.Service.Migrations
                     b.Property<string>("Manager")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ParentTeam")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Name");
+                    b.HasKey("ID");
 
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("TAMService.Data.Entities.User", b =>
+            modelBuilder.Entity("TAM.Service.Data.Entities.User", b =>
                 {
-                    b.Property<string>("EmailId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("PK")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmailId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Team")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("EmailId");
+                    b.HasKey("PK");
 
                     b.ToTable("Users");
                 });

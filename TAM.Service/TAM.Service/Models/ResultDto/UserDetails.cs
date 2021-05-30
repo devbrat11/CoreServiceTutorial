@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TAMService.Models.ResultDto
+namespace TAM.Service.Models.ResultDto
 {
-    public class UserResultDto
+    public class UserDetails
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

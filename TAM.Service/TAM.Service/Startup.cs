@@ -1,14 +1,14 @@
-﻿using TAMService.Data.Repository;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TAMService.Data.DataStore;
+using TAM.Service.Data.DataStore;
 using Microsoft.Extensions.Hosting;
 using TAM.Service.Helpers;
+using TAM.Service.Data.Repository;
 
-namespace TAMService
+namespace TAM.Service
 {
     public class Startup
     {

@@ -1,23 +1,32 @@
-﻿using TAMService.Data.Entities;
-using TAMService.Models.ResultDto;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using TAMService.Models;
+using TAM.Service.Models;
+using TAM.Service.Data.Entities;
+using TAM.Service.Models.ResultDto;
+using System;
 
-namespace TAMService.Helpers
+namespace TAM.Service.Helpers
 {
     public static class Mapper
     {
-        public static User ToEntity(this UserRegistrationInfo userRegistrationDto)
+        public static Tuple<User, LoginDetails> ToEntity(this UserRegistrationInfo userRegistrationInfo)
         {
-            return new User
-            {
-                Name = userRegistrationDto.Name,
-                DateOfBirth = userRegistrationDto.DateOfBirth,
-                Team = userRegistrationDto.Team,
-                EmailId = userRegistrationDto.EmailId,
-            };
+            return new Tuple<User, LoginDetails>
+                (
+                new User
+                {
+                    Name = userRegistrationInfo.Name,
+                    DateOfBirth = userRegistrationInfo.DateOfBirth,
+                    Team = userRegistrationInfo.Team,
+                    EmailId = userRegistrationInfo.EmailId,
+                },
+                 new LoginDetails()
+                 {
+                     UserID = userRegistrationInfo.EmailId,
+                     Password = GetHash(userRegistrationInfo.Password)
+                 }
+                );
         }
 
         public static Asset ToEntity(this AssetDto assetDto)
@@ -47,9 +56,9 @@ namespace TAMService.Helpers
             };
         }
 
-        public static UserResultDto AsUserResultDto(this User user, Team team=null, List<Asset> assets=null)
+        public static UserDetails ToDto(this User user, Team team = null, List<Asset> assets = null)
         {
-            var resultUser = new UserResultDto
+            var resultUser = new UserDetails
             {
                 Id = user.PK,
                 Name = user.Name,
@@ -58,18 +67,18 @@ namespace TAMService.Helpers
             };
             if (team != null)
             {
-                resultUser.Team = team.ConvertToTeamDto();
+                resultUser.Team = team.ToDto();
             }
 
             if (assets != null)
             {
-                resultUser.Assets = assets.ConvertToAssetDto();
+                resultUser.Assets = assets.ToDto();
             }
 
             return resultUser;
         }
 
-        public static AssetDto ConvertToAssetDto(this Asset asset)
+        public static AssetDto ToDto(this Asset asset)
         {
             return new AssetDto
             {
@@ -82,7 +91,7 @@ namespace TAMService.Helpers
             };
         }
 
-        private static List<AssetDto> ConvertToAssetDto(this List<Asset> assets)
+        private static List<AssetDto> ToDto(this List<Asset> assets)
         {
             var convertedAssets = new List<AssetDto>();
             foreach (var asset in assets)
@@ -99,10 +108,11 @@ namespace TAMService.Helpers
             return convertedAssets;
         }
 
-        private static TeamDto ConvertToTeamDto(this Team team)
+        private static TeamDto ToDto(this Team team)
         {
             return new TeamDto
             {
+                ID = team.ID,
                 Name = team.Name,
                 Department = team.Department,
                 ParentTeam = team.ParentTeam,
